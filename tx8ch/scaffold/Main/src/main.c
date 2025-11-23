@@ -23,7 +23,7 @@ SSDspi ssd = {
 
 char ssdString[33];
 
-#define CHANNEL_COUNT 8
+#define CHANNEL_COUNT 16
 static int8_t channels[CHANNEL_COUNT];
 
 #define STICK_COUNT 6
@@ -189,7 +189,7 @@ int8_t getStick(uint8_t index) {
 }
 
 void setChannel(uint8_t index, int8_t value) {
-  index &= CHANNEL_COUNT;
+  index %= CHANNEL_COUNT;
   channels[index] = value;
 }
 
@@ -227,6 +227,7 @@ uint16_t MAIN_ProcessEvent(uint8_t task_id, uint16_t events) {
 
     for (uint8_t i = 0; i < STICK_COUNT; i++) {
       sprintf(ssdString + i * 4, "%+4d", channels[i]);
+      // sprintf(ssdString + i * 4, "%+4d", getStick(i));
       if (!channels[i])
         ssdString[i * 4 + 2] = ' '; // omit '+' for zeros
     }
@@ -301,6 +302,8 @@ __attribute__((noinline)) void Main_Circulation() {
 void main() {
   SetSysClock(CLK_SOURCE_PLL_60MHz);
 
+  memset(channels, 0, CHANNEL_COUNT);
+
   uart1Init(&uartTx, &uartRx, 32, 32);
 
   gpioMode(&btnBoot, GPIO_ModeIN_PU);
@@ -314,6 +317,7 @@ void main() {
 
   GPIOPinRemap(ENABLE, RB_PIN_SPI0);
   ssdInit(&ssd, 128, 32);
+
 
   CH57X_BLEInit();
   HAL_Init();

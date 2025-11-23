@@ -1,12 +1,13 @@
 BIN     = ./bin
 BIN_PREFIX = riscv-wch-elf
 
+PORT = /dev/ttyUSB0
+
 CFLAGS 	= -march=rv32imac -mabi=ilp32 -mcmodel=medany -msmall-data-limit=8 -mno-save-restore -fmax-errors=20 -Os -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -fno-common -Wunused -g
 
 DEFINES =
 
 SCAFFOLD_ROOT = ..
-
 SCAFFOLD_DIST = $(SCAFFOLD_ROOT)/dist
 
 OUTPUT_DIR = ./dist
@@ -98,4 +99,7 @@ $(TARGET).siz: $(TARGET).elf
 $(TARGET).lst: $(TARGET).elf
 	$(BIN)/$(BIN_PREFIX)-objdump --source --all-headers --demangle --line-numbers --wide $^ > $@
 
-.PHONY: version clean
+flash: $(TARGET).hex
+	wchflash -p $(PORT) -f $<
+
+.PHONY: version clean flash
