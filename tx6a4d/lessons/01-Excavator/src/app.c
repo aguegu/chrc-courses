@@ -2,20 +2,16 @@
 
 // 遥控器：
 //
-// 右摇杆：
-//    左右： Sticks[0]
-//    上下： Sticks[1]
-// 左摇杆：
-//    上下： Sticks[2]
-//    左右： Sticks[3]
-// 左旋钮： Sticks[4]
-// 右旋钮： Sticks[5]
-// 按键从左到右： Buttons[3], Buttons[2], Buttons[1], Buttons[0]
+// 按键： Buttons[3], Buttons[2], Buttons[1], Buttons[0] (从左到右)
+// 左摇杆：                右摇杆：
+//    上下： Sticks[2]        上下： Sticks[1]
+//    左右： Sticks[3]        左右： Sticks[0]
+// 左旋钮： Sticks[4]      右旋钮： Sticks[5]
 
 // 接收机：
 //
-// 电机从左到右： Channels[0], Channels[1], Channels[2], Channels[3]
 // 舵机从左到右： Channels[4], Channels[5], Channels[6], Channels[7]
+// 电机从左到右： Channels[0], Channels[1], Channels[2], Channels[3]
 
 void app() {
   setChannel(0, getStick(2));
