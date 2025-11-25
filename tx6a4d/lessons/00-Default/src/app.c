@@ -8,19 +8,19 @@ void app() {
   setChannel(4, getStick(4));
   setChannel(5, getStick(5));
 
-  if (getButton(0) && getChannel(6) < 127) {
+  if (getButton(0) && getChannel(6) + 1 < 127) {
     setChannel(6, getChannel(6) + 1);
   }
 
-  if (getButton(1) && getChannel(6) > -127) {
+  if (getButton(1) && getChannel(6) - 1 > -127) {
     setChannel(6, getChannel(6) - 1);
   }
 
-  if (getButton(2) && getChannel(7) < 127) {
+  if (getButton(2) && getChannel(7) + 1 < 127) {
     setChannel(7, getChannel(7) + 1);
   }
 
-  if (getButton(3) && getChannel(7) > -127) {
+  if (getButton(3) && getChannel(7) - 1 > -127) {
     setChannel(7, getChannel(7) - 1);
   }
 }
