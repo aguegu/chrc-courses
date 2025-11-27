@@ -13,8 +13,8 @@ void app() {
   setChannel(1, - getStickNeutral(2, 5));
   setChannel(2, getStickNeutral(1, 5));
 
-  setChannel(3, getStick(4)); // led
-  
+  setChannel(3, - getStick(4)); // led
+
   setChannel(4, - getStickNeutral(0, 5));
 
 }
