@@ -9,12 +9,12 @@ int8_t getStickNeutral(uint8_t index, uint8_t deadzone) {
 }
 
 void app() {
-  setChannel(0, getStickNeutral(3, 5) / 2);
-  setChannel(1, - getStickNeutral(2, 5));
-  setChannel(2, getStickNeutral(1, 5));
+  setChannel(0, getStickNeutral(3, 5) / 2); // Pitch
+  setChannel(1, - getStickNeutral(2, 5) / 2); // Engine
+  setChannel(2, getStickNeutral(1, 5)); // Lift
 
-  setChannel(3, - getStick(4)); // led
+  setChannel(3, - getStick(4)); // Led
 
-  setChannel(4, - getStickNeutral(0, 5));
+  setChannel(4, - getStickNeutral(0, 5) / 2); // Turn
 
 }
