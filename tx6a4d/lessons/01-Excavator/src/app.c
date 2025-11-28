@@ -1,6 +1,6 @@
 #include "app.h"
 
-void app() {
+void loop() {
   setChannel(0, getStick(2));
   setChannel(1, getStick(3));
   setChannel(2, getStick(0));

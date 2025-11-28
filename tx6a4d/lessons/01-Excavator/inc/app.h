@@ -12,6 +12,6 @@ void setChannel(uint8_t index, int8_t value);
 
 int8_t getChannel(uint8_t index);
 
-void app();
+void loop();
 
 #endif
