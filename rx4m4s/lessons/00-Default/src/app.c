@@ -1,6 +1,6 @@
 #include "app.h"
 
-void app() {
+void loop() {
   setMotor(0, getChannel(0));
   setMotor(1, getChannel(1));
   setMotor(2, getChannel(2));
