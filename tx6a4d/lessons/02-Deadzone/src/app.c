@@ -10,7 +10,7 @@ int8_t getStickNeutral(uint8_t index) {
   return ABS(getStick(index)) > DEADZONE ? getStick(index) : 0;
 }
 
-void app() {
+void loop() {
   setChannel(0, getStickNeutral(2));
   setChannel(1, getStickNeutral(3));
   setChannel(2, getStickNeutral(0));
