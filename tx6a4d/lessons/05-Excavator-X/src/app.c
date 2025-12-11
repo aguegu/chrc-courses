@@ -22,19 +22,19 @@ int8_t getStickNeutral(uint8_t index, uint8_t deadzone) {
 }
 
 void loop() {
-  int16_t left = getStickNeutral(1, 0x10) + getStickNeutral(0, 0x10);
-  int16_t right = getStickNeutral(1, 0x10) - getStickNeutral(0, 0x10);
+  int16_t left = getStickNeutral(1, 0x10) - getStickNeutral(0, 0x10);
+  int16_t right = getStickNeutral(1, 0x10) + getStickNeutral(0, 0x10);
 
   int16_t m = maxIn3(ABS(left), ABS(right), 127);
 
-  setChannel(4, left * 127. / m); // Left Motor
-  setChannel(5, right * 127. / m);  // Right Motor
+  setChannel(4, right * 127. / m); // Right Motor
+  setChannel(5, left * 127. / m);  // Left Motor
 
-  setChannel(2, - getStickNeutral(2, 0x20));  // Dipper
-  setChannel(3, getStickNeutral(3, 0x20) / 2);    // Swing
+  setChannel(2, - getStickNeutral(2, 0x20));    // Dipper
+  setChannel(3, getStickNeutral(3, 0x20) / 2);  // Swing
 
   setChannel(6, MIN(getStick(4), 0)); // Blade
-  setChannel(7, getStick(5)); // Crawler
+  setChannel(7, getStick(5));         // Crawler
 
   if (getButton(0) == getButton(1)) { // Bucket
     setChannel(0, 0);
