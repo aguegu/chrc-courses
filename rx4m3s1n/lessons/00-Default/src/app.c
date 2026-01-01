@@ -9,5 +9,4 @@ void loop() {
   setServo(0, 150 + getChannel(4) * 2 / 5);
   setServo(1, 150 + getChannel(5) * 2 / 5);
   setServo(2, 150 + getChannel(6) * 2 / 5);
-  setServo(3, 150 + getChannel(7) * 2 / 5);
 }
