@@ -22,8 +22,7 @@ void setup() {
 }
 
 void onPlayerReady() {
-  mpVolume(30);
-  // mpPlay(0x01);
+  mpVolume(30); 
 }
 
 void loop() {
@@ -45,15 +44,15 @@ void loop() {
   setServo(0, 150 + getChannel(4) * 2 / 5);
 
   if (ledsLeftOn || ledsRightOn) {
-    mpPlay(0x03);
+    mpPlay(3);  // play 0003.mp3
   }
 
   if (ledsCeilOn) {
-    mpPlay(0x02);
+    mpPlay(2);  // play 0002.mp3
   }
 
   if (getChannel(6)) {
-    mpPlay(0x01);
+    mpPlay(1);  // play 0001.mp3
   }
 }
 

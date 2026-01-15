@@ -16,4 +16,6 @@ void loop() {
   setChannel(3, - getStick(4)); // Led
 
   setChannel(4, getStick(0) / 2); // Turn
+
+  setChannel(6, getButton(3));  // Start
 }
