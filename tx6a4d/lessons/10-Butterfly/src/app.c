@@ -1,12 +1,25 @@
 #include "app.h"
 
+#ifndef ABS
+#define ABS(n)     (((n) < 0) ? -(n) : (n))
+#endif
+
+#define DEADZONE (3)
+
+int8_t getStickNeutral(uint8_t index) {
+  return ABS(getStick(index)) > DEADZONE ? getStick(index) : 0;
+}
+
 void loop() {
   static bool buttonsLast[4] = { false, false, false, false };
 
-  setChannel(0, getStick(0));
-  setChannel(1, getStick(1));
+  setChannel(0, getStickNeutral(0));
+  setChannel(1, getStickNeutral(1));
+
   setChannel(2, getStick(2));
-  setChannel(3, getStick(3));
+
+  setChannel(3, getStickNeutral(3));
+
   setChannel(4, getStick(4));
   setChannel(5, getStick(5));
 
