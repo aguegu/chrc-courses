@@ -11,6 +11,11 @@ Examples to customize firmware on Sourcekit&reg; MeshMass&trade; Series DevKits
 
 `rx4m1s1n1a` share the same hardware with `rx4m4s` and `rx4m3s1n`, but 1 servo channel is used to drive NeoPixel(WS2812) Leds, another 2 servo channels are used to drive a Audio(MP3) module.
 
+The firmware could be compiled and flashed to the DevKits on
+
+  * https://meshmass.com (International)
+  * https://meshmass.y77.cc (China Mainland)
+
 This Repository is Published at
 
   * https://github.com/aguegu/chrc-courses
