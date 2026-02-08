@@ -9,18 +9,18 @@ void loop() {
   setChannel(5, getStick(5));
 
   if (getButton(0) && getChannel(6) < 127) {
-    setChannel(6, getChannel(6) + 1);
+    setChannel(6, getChannel(6) + 2);
   }
 
   if (getButton(1) && getChannel(6) > -127) {
-    setChannel(6, getChannel(6) - 1);
+    setChannel(6, getChannel(6) - 2);
   }
 
   if (getButton(2) && getChannel(7) < 127) {
-    setChannel(7, getChannel(7) + 1);
+    setChannel(6, getChannel(6) + 8);
   }
 
-  if (getButton(3) && getChannel(7) > -127) {
-    setChannel(7, getChannel(7) - 1);
+  if (getButton(3) && getChannel(6) > -127) {
+    setChannel(6, getChannel(6) - 8);
   }
 }
