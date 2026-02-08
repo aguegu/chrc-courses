@@ -16,7 +16,7 @@ void loop() {
     setChannel(6, getChannel(6) - 2);
   }
 
-  if (getButton(2) && getChannel(7) < 127) {
+  if (getButton(2) && getChannel(6) < 127) {
     setChannel(6, getChannel(6) + 8);
   }
 
