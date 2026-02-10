@@ -1,5 +1,7 @@
 #include "app.h"
 
+// NOTICE: To try this demo, there should not be spring in STK[2]
+
 #ifndef ABS
 #define ABS(n)     (((n) < 0) ? -(n) : (n))
 #endif
