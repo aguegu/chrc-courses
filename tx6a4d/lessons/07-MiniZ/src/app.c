@@ -1,6 +1,6 @@
-#include "app.h"
+// The main logic control is at the receiver/rx/vehicle side
 
-// NOTICE: To try this demo, there should not be spring in STK[2]
+#include "app.h"
 
 #ifndef ABS
 #define ABS(n)     (((n) < 0) ? -(n) : (n))
@@ -13,7 +13,7 @@ int8_t getStickNeutral(uint8_t index, uint8_t deadzone) {
 void loop() {
   setChannel(0, getStickNeutral(0, 4));
   setChannel(1, getStickNeutral(1, 4));
-  setChannel(2, getStick(2)); // no spring in STK[2]
+  setChannel(2, getStickNeutral(2, 4));
   setChannel(3, getStickNeutral(3, 4));
 
   setChannel(8, getStick(4));
