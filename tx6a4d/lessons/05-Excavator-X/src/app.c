@@ -21,7 +21,7 @@ void loop() {
   int16_t left = getStickNeutral(1, 0x10) - getStickNeutral(0, 0x10);
   int16_t right = getStickNeutral(1, 0x10) + getStickNeutral(0, 0x10);
 
-  int16_t m = maxIn3(ABS(left), ABS(right), 127);
+  int16_t m = maxIn3(abs(left), abs(right), 127);
 
   setChannel(4, right * 127. / m); // Right Motor
   setChannel(5, left * 127. / m);  // Left Motor
