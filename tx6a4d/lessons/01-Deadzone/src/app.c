@@ -1,13 +1,9 @@
 #include "app.h"
 
-#ifndef ABS
-#define ABS(n)     (((n) < 0) ? -(n) : (n))
-#endif
-
 #define DEADZONE (5)
 
 int8_t getStickNeutral(uint8_t index) {
-  return ABS(getStick(index)) > DEADZONE ? getStick(index) : 0;
+  return abs(getStick(index)) > DEADZONE ? getStick(index) : 0;
 }
 
 void loop() {

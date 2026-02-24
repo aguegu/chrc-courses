@@ -1,9 +1,5 @@
 #include "app.h"
 
-#ifndef ABS
-#define ABS(n)     (((n) < 0) ? -(n) : (n))
-#endif
-
 #ifndef MIN
 #define MIN(n,m)   (((n) < (m)) ? (n) : (m))
 #endif
@@ -18,7 +14,7 @@ int16_t maxIn3(int16_t a, int16_t b, int16_t c) {
 }
 
 int8_t getStickNeutral(uint8_t index, uint8_t deadzone) {
-  return ABS(getStick(index)) > deadzone ? getStick(index) : 0;
+  return abs(getStick(index)) > deadzone ? getStick(index) : 0;
 }
 
 void loop() {
