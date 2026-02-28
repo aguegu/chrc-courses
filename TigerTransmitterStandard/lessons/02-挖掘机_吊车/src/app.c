@@ -1,21 +1,14 @@
 #include "app.h"
 
-#ifndef ABS
-#define ABS(n)     (((n) < 0) ? -(n) : (n))
-#endif
-
-#ifndef MIN
-#define MIN(n,m)   (((n) < (m)) ? (n) : (m))
-#endif
-
-#ifndef MAX
-#define MAX(n,m)   (((n) < (m)) ? (m) : (n))
-#endif
-
 int8_t getStickNeutral(uint8_t index, uint8_t deadzone) {
-  return ABS(getStick(index)) > deadzone ? getStick(index) : 0;
+  int8_t v = getStick(index);
+  if (v > deadzone) {
+    return (float)(v - deadzone) / (127 - deadzone) * 127;
+  } else if (v < -deadzone) {
+    return (float)(v + deadzone) / (127 - deadzone) * 127;
+  }
+  return 0;
 }
-
 void loop() {
   setChannel(0, getStickNeutral(0, 20));      // Bucket
   setChannel(1, - getStickNeutral(1, 20));    // Boom

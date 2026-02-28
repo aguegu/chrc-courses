@@ -1,13 +1,16 @@
 #include "app.h"
 
-#ifndef ABS
-#define ABS(n)     (((n) < 0) ? -(n) : (n))
-#endif
-
-uint8_t gear = 5;
+#define GEARS 5
+uint8_t gear = GEARS;
 
 int8_t getStickNeutral(uint8_t index, uint8_t deadzone) {
-  return ABS(getStick(index)) > deadzone ? getStick(index) : 0;
+  int8_t v = getStick(index);
+  if (v > deadzone) {
+    return (float)(v - deadzone) / (127 - deadzone) * 127;
+  } else if (v < -deadzone) {
+    return (float)(v + deadzone) / (127 - deadzone) * 127;
+  }
+  return 0;
 }
 
 void loop() {
@@ -17,7 +20,7 @@ void loop() {
 
   setChannel(4, getStickNeutral(0, 5) * 3 / 4 + getStick(5) / 4); // SM0
 
-  setChannel(0, -getStickNeutral(2, 10) * gear / 5); // DM0
+  setChannel(0, -getStickNeutral(2, 10) * gear / GEARS); // DM0
 
   setChannel(1, getStickNeutral(3, 20)); // DM1
 
@@ -30,7 +33,7 @@ void loop() {
   }
 
   if (getButton(1) && !buttonsLast[1]) {
-    if (gear < 5) gear++;
+    if (gear < GEARS) gear++;
   }
 
   if (getButton(2) && !buttonsLast[2]) {
