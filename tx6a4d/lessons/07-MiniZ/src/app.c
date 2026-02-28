@@ -13,7 +13,7 @@ int8_t getStickNeutral(uint8_t index, uint8_t deadzone) {
 }
 
 void loop() {
-  setChannel(0, getStickNeutral(0, 4));
+  setChannel(0, getStick(0));
   setChannel(1, getStickNeutral(1, 4));
   setChannel(2, getStickNeutral(2, 4));
   setChannel(3, getStickNeutral(3, 4));
