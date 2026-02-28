@@ -14,9 +14,7 @@ int8_t getStickNeutral(uint8_t index, uint8_t deadzone) {
 }
 
 void loop() {
-
   static bool buttonsLast[4] = { false, false, false, false };
-
 
   setChannel(4, getStickNeutral(0, 5) * 3 / 4 + getStick(5) / 4); // SM0
 
