@@ -1,10 +1,17 @@
 #include "app.h"
 
-int8_t stickToMotor(uint8_t index, uint8_t deadzone) {
-  if (getStick(index) < deadzone && getStick(index) > -deadzone) {
-    return 0;
+int8_t getStickNeutral(uint8_t index, uint8_t deadzone) {
+  int8_t v = getStick(index);
+  if (v > deadzone) {
+    return (float)(v - deadzone) / (127 - deadzone) * 127;
+  } else if (v < -deadzone) {
+    return (float)(v + deadzone) / (127 - deadzone) * 127;
   }
-  double f = getStick(index) / 127.0;
+  return 0;
+}
+
+int8_t stickToMotor(uint8_t index, uint8_t deadzone) {
+  double f = getStickNeutral(index, deadzone) / 127.0;
   return (int8_t)(f * f * 127.0 * (f > 0 ? 1 : -1));
 }
 

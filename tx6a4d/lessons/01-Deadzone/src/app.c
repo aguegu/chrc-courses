@@ -1,16 +1,20 @@
 #include "app.h"
 
-#define DEADZONE (5)
-
-int8_t getStickNeutral(uint8_t index) {
-  return abs(getStick(index)) > DEADZONE ? getStick(index) : 0;
+int8_t getStickNeutral(uint8_t index, uint8_t deadzone) {
+  int8_t v = getStick(index);
+  if (v > deadzone) {
+    return (float)(v - deadzone) / (127 - deadzone) * 127;
+  } else if (v < -deadzone) {
+    return (float)(v + deadzone) / (127 - deadzone) * 127;
+  }
+  return 0;
 }
 
 void loop() {
-  setChannel(0, getStickNeutral(2));
-  setChannel(1, getStickNeutral(3));
-  setChannel(2, getStickNeutral(0));
-  setChannel(3, getStickNeutral(1));
+  setChannel(0, getStickNeutral(2, 5));
+  setChannel(1, getStickNeutral(3, 5));
+  setChannel(2, getStickNeutral(0, 5));
+  setChannel(3, getStickNeutral(1, 5));
 
   setChannel(4, getStick(4));
   setChannel(5, getStick(5));
