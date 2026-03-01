@@ -34,8 +34,8 @@ void loop(void) {
   int16_t m = maxIn3(abs(left), abs(right), 127);
   if (m == 0) m = 1;
 
-  setChannel(0, (int16_t)(right * 127.0f / m * gear / GEARS));
-  setChannel(1, (int16_t)(left  * 127.0f / m * gear / GEARS));
+  setChannel(0, (int16_t)(right * 127.0f / m * gear / GEARS));  // Motor Right
+  setChannel(1, (int16_t)(left  * 127.0f / m * gear / GEARS));  // Motor left
 
   setChannel(2, getStick(1));
   setChannel(4, getStick(0));
@@ -48,7 +48,7 @@ void loop(void) {
     if (gear < GEARS) gear++;
   }
 
-  setChannel(3, getButton(3) ? 127 : 0);
+  setChannel(3, getButton(3) ? 127 : 0);  // Fire
 
   for (uint8_t i = 0; i < 4; i++) {
     buttonsLast[i] = getButton(i);
