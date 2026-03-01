@@ -34,8 +34,8 @@ void loop(void) {
   int16_t m = maxIn3(abs(left), abs(right), 127);
   if (m == 0) m = 1;
 
-  setChannel(0, (int16_t)(right * 127.0f / m * gear / GEARS));  // Motor Right
-  setChannel(1, (int16_t)(left  * 127.0f / m * gear / GEARS));  // Motor left
+  setChannel(0, (int8_t)(right * 127.0f / m * gear / GEARS));  // Motor Right
+  setChannel(1, (int8_t)(left  * 127.0f / m * gear / GEARS));  // Motor left
 
   setChannel(2, getStick(1));
   setChannel(4, getStick(0));
