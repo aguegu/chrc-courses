@@ -37,8 +37,8 @@ void loop(void) {
   setChannel(0, (int8_t)(right * 127.0f / m * gear / GEARS));  // Motor Right
   setChannel(1, (int8_t)(left  * 127.0f / m * gear / GEARS));  // Motor left
 
-  setChannel(2, getStick(1));
-  setChannel(4, getStick(0));
+  setChannel(2, getStickNeutral(1, DEADZONE));  // Gun Elevation
+  setChannel(4, getStickNeutral(0, DEADZONE));  // Turret Traverse
 
   if (getButton(0) && !buttonsLast[0]) {
     if (gear > 1) gear--;
@@ -48,7 +48,7 @@ void loop(void) {
     if (gear < GEARS) gear++;
   }
 
-  setChannel(3, getButton(3) ? 127 : 0);  // Fire
+  setChannel(3, getButton(3) ? 127 : -128);  // Gun Shoot, -128 means motor brake
 
   for (uint8_t i = 0; i < 4; i++) {
     buttonsLast[i] = getButton(i);
