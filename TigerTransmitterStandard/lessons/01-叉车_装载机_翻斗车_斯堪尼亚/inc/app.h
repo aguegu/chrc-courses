@@ -5,63 +5,59 @@
 #include <stdbool.h>
 
 /**
- * Read digital button state.
+ * 读取数字按钮状态。
  *
- * @param index Button index (0-3):
- *              - 0: Button 0 (left edge) / Left joystick press
- *              - 1: Button 1 (left middle)
- *              - 2: Button 2 (right middle)
- *              - 3: Button 3 (right edge) / Right joystick press
- * @return true if button is pressed, false otherwise
+ * @param index 按钮索引 (0-3):
+ *              - 0: 按钮0（左侧边缘）/ 左摇杆按压
+ *              - 1: 按钮1（左侧中间）
+ *              - 2: 按钮2（右侧中间）
+ *              - 3: 按钮3（右侧边缘）/ 右摇杆按压
+ * @return true 如果按钮按下，否则 false
  */
 bool getButton(uint8_t index);
 
 /**
- * Read analog input value.
+ * 读取模拟输入值。
  *
- * @param index Analog input index (0-5):
- *              - 0: Right joystick X-axis (STK0)
- *              - 1: Right joystick Y-axis (STK1)
- *              - 2: Left joystick Y-axis (STK2)
- *              - 3: Left joystick X-axis (STK3)
- *              - 4: Left knob (STK4)
- *              - 5: Right knob (STK5)
- * @return Signed 8-bit value (-127 to 127). Value -128 is avoided by firmware
- *         to enable clean direction reversal. Value 0 represents the
- *         center/neutral position.
+ * @param index 模拟输入索引 (0-5):
+ *              - 0: 右摇杆 X轴 (STK0)
+ *              - 1: 右摇杆 Y轴 (STK1)
+ *              - 2: 左摇杆 Y轴 (STK2)
+ *              - 3: 左摇杆 X轴 (STK3)
+ *              - 4: 左旋钮 (STK4)
+ *              - 5: 右旋钮 (STK5)
+ * @return 有符号8位值 (-127 到 127)。固件避免使用-128值以支持方向反转。
+ *         值0表示中心/中立位置。
  */
 int8_t getStick(uint8_t index);
 
 /**
- * Set wireless channel value.
+ * 设置无线通道值。
  *
- * @param index Channel index (0-15)
- * @param value Signed 8-bit value (-128 to 127) to assign to channel.
- *              While getStick() avoids -128, setChannel() can use it for
- *              special purposes (e.g., braking in motor control).
+ * @param index 通道索引 (0-15)
+ * @param value 有符号8位值 (-128 到 127) 分配给通道。
+ *              虽然 getStick() 避免使用-128，但 setChannel() 可以将其用于特殊用途
+ *              （例如，电机控制中的刹车）。
  */
 void setChannel(uint8_t index, int8_t value);
 
 /**
- * Get current wireless channel value.
+ * 获取当前无线通道值。
  *
- * @param index Channel index (0-15)
- * @return Current signed 8-bit value (-128 to 127) of the channel
+ * @param index 通道索引 (0-15)
+ * @return 通道当前的有符号8位值 (-128 到 127)
  */
 int8_t getChannel(uint8_t index);
 
 /**
- * Application main loop function.
+ * 应用程序主循环函数。
  *
- * Called every 20ms (50Hz) by the firmware scaffold. Implement this function
- * to define your control logic mapping inputs to wireless channels.
+ * 由固件框架每20ms（50Hz）调用一次。实现此函数以定义将输入映射到无线通道的控制逻辑。
  *
- * Important: Avoid busy-waiting or delay functions. The firmware runs a
- * Real-Time Operating System (RTOS) in the background.
+ * 重要：避免忙等待或延时函数。固件在后台运行实时操作系统（RTOS）。
  *
- * After loop() completes, the firmware broadcasts all 16 channel values
- * wirelessly to paired receivers. Channels not explicitly set in loop()
- * retain their previous values.
+ * loop() 完成后，固件将所有16个通道值无线广播到配对的接收器。
+ * 在 loop() 中未显式设置的通道保留其先前值。
  */
 void loop();
 
