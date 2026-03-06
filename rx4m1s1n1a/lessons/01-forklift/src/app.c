@@ -13,16 +13,10 @@ static bool ledsCeilOn = false;
 
 void setup() {
   neoInit(pixelCount);
-
-  for (uint8_t i = 0; i < 4; i++) {
-    setMotor(i, 0);
-  }
-
-  setServo(0, 150);
 }
 
 void onPlayerReady() {
-  mpVolume(30); 
+  mpVolume(15);
 }
 
 void loop() {
@@ -44,15 +38,15 @@ void loop() {
   setServo(0, 150 + getChannel(4) * 2 / 5);
 
   if (ledsLeftOn || ledsRightOn) {
-    mpPlay(3);  // play 0003.mp3
+    mpPlay(3, false);  // play 0003.mp3
   }
 
   if (ledsCeilOn) {
-    mpPlay(2);  // play 0002.mp3
+    mpPlay(2, false);  // play 0002.mp3
   }
 
   if (getChannel(6)) {
-    mpPlay(1);  // play 0001.mp3
+    mpPlay(1, false);  // play 0001.mp3
   }
 }
 
@@ -67,27 +61,27 @@ void neo() {
   static uint8_t step = 0;
 
   for (uint8_t i = 0; i < 4; i++) {
-    neoSetRGB888(ledsHead[i], ledsHeadOn ? 0x40 : 0, ledsHeadOn ? 0x40 : 0, ledsHeadOn ? 0x40: 0);
+    neoSetColor(ledsHead[i], COLOR_WHITE, ledsHeadOn ? 0x40 : 0);
   }
 
   for (uint8_t i = 0; i < 2; i++) {
-    neoSetRGB888(ledsReverse[i], ledsReverseOn ? 0x20 : 0, ledsReverseOn ? 0x20 : 0, ledsReverseOn ? 0x20: 0);
+    neoSetColor(ledsReverse[i], COLOR_WHITE, ledsReverseOn ? 0x20 : 0);
   }
 
   for (uint8_t i = 0; i < 2; i++) {
-    neoSetRGB888(ledsBrake[i], ledsBrakeOn || ledsReverseOn ? 0x80 : 0,  0, 0);
+    neoSetColor(ledsBrake[i], COLOR_RED, ledsBrakeOn || ledsReverseOn ? 0x40 : 0);
   }
 
   for (uint8_t i = 0; i < 2; i++) {
-    neoSetRGB888(ledsLeft[i], ledsLeftOn && (step & 0x01) ? 0x40 : 0, ledsLeftOn && (step & 0x01) ? 0x20 : 0, 0);
+    neoSetColor(ledsBrake[i], COLOR_YELLOW, ledsLeftOn && (step & 0x01) ? 0x40 : 0);
   }
 
   for (uint8_t i = 0; i < 2; i++) {
-    neoSetRGB888(ledsRight[i], ledsRightOn && (step & 0x01) ? 0x40 : 0, ledsRightOn && (step & 0x01) ? 0x20 : 0, 0);
+    neoSetColor(ledsRight[i], COLOR_YELLOW, ledsRightOn && (step & 0x01) ? 0x40 : 0);
   }
 
   for (uint8_t i = 0; i < 4; i++) {
-    neoSetRGB888(ledsCeil[i], ledsCeilOn && ((step & 0x01) == (i & 0x01)) ? 0x40 : 0, ledsCeilOn && ((step & 0x01) == (i & 0x01)) ? 0x20 : 0, 0);
+    neoSetColor(ledsCeil[i], COLOR_ORANGE, ledsCeilOn && ((step & 0x01) == (i & 0x01)) ? 0x20 : 0);
   }
 
   step++;

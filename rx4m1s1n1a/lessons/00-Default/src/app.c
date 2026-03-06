@@ -3,19 +3,12 @@
 static uint8_t pixelCount = 16;
 
 void setup() {
-
-  for (uint8_t i = 0; i < 4; i++) {
-    setMotor(i, 0);
-  }
-
-  setServo(0, 150);
-
   neoInit(pixelCount);
 }
 
 void onPlayerReady() {
-  mpVolume(30);
-  mpPlay(0x0001);
+  mpVolume(10);
+  mpPlay(1, false);
 }
 
 void loop() {
