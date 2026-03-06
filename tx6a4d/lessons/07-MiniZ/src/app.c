@@ -25,7 +25,10 @@ void loop() {
 
   setChannel(10, getButton(0));
   setChannel(11, getButton(1));
-  setChannel(12, getButton(2));
+  
+  if (getButton(2) && !buttonsLast[2]) {
+    setChannel(12, !getChannel(12));
+  }
 
   if (getButton(3) && !buttonsLast[3]) {
     setChannel(13, !getChannel(13));

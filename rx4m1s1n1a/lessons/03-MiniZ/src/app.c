@@ -1,5 +1,11 @@
 #include "app.h"
 
+// 1: engine start
+// 2: warning
+// 3: turning
+// 4. engine stop
+// 5. running
+
 static bool isBrakeOn = false;  // 7, 8
 static bool isReverseOn = false;  // 6, 9
 static bool isTurnLeftON = false; // 10, 13
@@ -12,19 +18,25 @@ void setup() {
   neoInit(32);
 }
 
+void onPlayerReady() {
+  mpVolume(30);
+}
+
 void loop() {
+  static bool isSoundOn = false;
+
   float ratio = (getChannel(8) + 127) / 254.0;
   int8_t speed = getChannel(2) * ratio;
 
-  if (getChannel(11) || getChannel(12)) {
+  if (getChannel(11)) {
     setMotor(0, -128); // brake
     isBrakeOn = true;
   } else {
-    setMotor(0, -speed);
+    setMotor(0, speed);
     isBrakeOn = false;
   }
 
-  setServo(0, 150 - getChannel(0) * 2 / 10 - getChannel(9) * 1 / 10);
+  setServo(0, 150 + getChannel(0) * 3 / 10 + getChannel(9) * 1 / 10);
 
   isReverseOn = speed < -10;
 
@@ -33,6 +45,27 @@ void loop() {
 
   isHeadLightOn = getChannel(13);
   isFlashOn = getChannel(10);
+
+  if (getChannel(12) && !isSoundOn) {
+    mpPlay(1, true);
+  }
+
+  if (isSoundOn) {
+    if (!getChannel(12)) {
+      mpPlay(4, true);
+    }
+
+    if (isTurnLeftON || isTurnRightON) {
+      mpPlay(3, true);  // play 0002.mp3
+    }
+
+    if (isReverseOn) {
+      mpPlay(2, true);  // play 0002.mp3
+    }
+    mpPlay(5, false);
+  }
+
+  isSoundOn = getChannel(12);
 }
 
 void neo() {
@@ -53,11 +86,11 @@ void neo() {
   neoSetColor(6, COLOR_RED, brakeBrightness + (isBrakeOn || isReverseOn ? 0x80 : 0x00));
   neoSetColor(9, COLOR_RED, brakeBrightness + (isBrakeOn || isReverseOn? 0x80 : 0x00));
 
-  neoSetColor(10, COLOR_ORANGE, turningBrightness + (isTurnLeftON && (step & 0x04) ? 0x40 : 0));
-  neoSetColor(13, COLOR_ORANGE, turningBrightness + (isTurnLeftON && (step & 0x04) ? 0x40 : 0));
+  neoSetColor(10, COLOR_ORANGE, turningBrightness + (isTurnLeftON && (step & 0x02) ? 0x40 : 0));
+  neoSetColor(13, COLOR_ORANGE, turningBrightness + (isTurnLeftON && (step & 0x02) ? 0x40 : 0));
 
-  neoSetColor(5, COLOR_ORANGE, turningBrightness + (isTurnRightON && (step & 0x04) ? 0x40 : 0));
-  neoSetColor(2, COLOR_ORANGE, turningBrightness + (isTurnRightON && (step & 0x04) ? 0x40 : 0));
+  neoSetColor(5, COLOR_ORANGE, turningBrightness + (isTurnRightON && (step & 0x02) ? 0x40 : 0));
+  neoSetColor(2, COLOR_ORANGE, turningBrightness + (isTurnRightON && (step & 0x02) ? 0x40 : 0));
 
   neoSetColor(0, COLOR_WHITE, headlightBrightness + (isFlashOn && headlightBrightness ? 0x80 : 0));
   neoSetColor(1, COLOR_WHITE, headlightBrightness + (isFlashOn && headlightBrightness ? 0x80 : 0));
