@@ -30,10 +30,10 @@ void loop() {
   int8_t speed = getChannel(2) * ratio;
 
   if (getChannel(11)) {
-    setMotor(0, -128); // brake
+    setMotor(1, -128); // brake
     isBrakeOn = true;
   } else {
-    setMotor(0, speed);
+    setMotor(1, speed);
     isBrakeOn = false;
   }
 

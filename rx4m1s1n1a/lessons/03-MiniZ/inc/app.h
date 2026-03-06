@@ -4,7 +4,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include "mp.h"
 
 /**
  * Common color hue values for use with neoSetHSL() and neoSetColor() functions.
@@ -33,7 +32,7 @@ int8_t getChannel(uint8_t index);
 /**
  * Set motor output value.
  *
- * @param index Motor index (0-3 for RX4M3S1N)
+ * @param index Motor index (0-3 for RX4M1S1N1A)
  * @param value Signed 8-bit value (-128 to 127) representing motor speed and direction.
  *              The value represents PWM duty cycle percentage:
  *              - 127: 100% PWM duty cycle in one direction
@@ -48,7 +47,7 @@ void setMotor(uint8_t index, int8_t value);
 /**
  * Set servo output value.
  *
- * @param index Servo index (0-2 for RX4M3S1N)
+ * @param index Servo index (0 for RX4M1S1N1A)
  * @param value Unsigned 8-bit value (0-255) representing servo position.
  *              The value corresponds to PWM high-level pulse width in
  *              0.01ms units within a 20ms period, providing a range of
@@ -66,7 +65,7 @@ void setServo(uint8_t index, uint8_t value);
 /**
  * Get current motor output value.
  *
- * @param index Motor index (0-3 for RX4M3S1N)
+ * @param index Motor index (0-3 for RX4M1S1N1A)
  * @return Signed 8-bit value (-128 to 127) representing the current
  *         motor output value set by setMotor().
  */
@@ -75,7 +74,7 @@ int8_t getMotor(uint8_t index);
 /**
  * Get current servo output value.
  *
- * @param index Servo index (0-2 for RX4M3S1N)
+ * @param index Servo index (0 for RX4M1S1N1A)
  * @return Unsigned 8-bit value (0-255) representing the current
  *         servo output value set by setServo().
  */
@@ -88,6 +87,9 @@ uint8_t getServo(uint8_t index);
  * initializing variables, configuring hardware peripherals, or
  * setting default motor/servo positions. For Neopixel initialization,
  * call neoInit() within setup() to configure the LED count.
+ *
+ * Note: The MY1690 audio module initializes automatically after setup()
+ * completes. Use onPlayerReady() callback for audio-specific initialization.
  */
 void setup();
 
@@ -97,6 +99,7 @@ void setup();
  *
  * Implement this function to map received channel values (via getChannel())
  * to motor and servo outputs (using setMotor() and setServo()).
+ * For audio control, use mpPlay() and mpVolume() functions.
  *
  * The function is called automatically by the firmware scaffold each time
  * a complete set of 16 channel values is received from the transmitter.
@@ -153,6 +156,56 @@ void neoSetHSL(uint8_t n, uint16_t hue, uint8_t saturation, uint8_t lightness);
  */
 void neoSetColor(uint8_t index, uint16_t color, uint8_t lightness);
 
+
+/**
+ * Play audio file from MY1690 audio module SD card storage.
+ *
+ * Files must be stored in the root directory of a FAT16/FAT32 formatted
+ * SD card (max 32GB) with 4-digit numeric filenames (0001-9999). Supported
+ * formats: MP3 or WAV. User-friendly names can be appended after the
+ * serial number (e.g., 0001_EngineStart.mp3, 0002_EngineRunning.wav).
+ *
+ * The function is typically called from loop() (every 20ms). Audio files
+ * often last longer than 20ms, requiring careful force parameter selection.
+ *
+ * @param filesn Serial number of audio file (1-9999)
+ * @param force Force playback behavior:
+ *              - false: If player is busy (playing any file), command is skipped.
+ *                If player is idle, filesn starts playing.
+ *              - true: If player is idle, filesn starts playing.
+ *                If player is busy playing a different file, current playback
+ *                is interrupted and filesn starts from beginning.
+ *                If player is already playing the same file (filesn), command
+ *                is skipped (does not restart current playback).
+ */
+void mpPlay(uint16_t filesn, bool force);
+
+/**
+ * Set MY1690 audio module playback volume level.
+ *
+ * @param value Volume level (0 = silent, 30 = maximum volume).
+ *              Volume setting persists until changed.
+ */
+void mpVolume(uint8_t value);
+
+/**
+ * MY1690 audio player ready callback function called by the system when
+ * audio module initialization is complete.
+ *
+ * The audio module automatically initializes during system startup.
+ * Initialization typically completes after setup() returns, at which
+ * point this callback is invoked.
+ *
+ * Implement this function to perform audio-related initialization
+ * tasks such as setting initial volume or playing startup sounds.
+ *
+ * Example:
+ * ```
+ * void onPlayerReady() {
+ *   mpVolume(20);  // Set volume to level 20 (0-30 range)
+ * }
+ * ```
+ */
 void onPlayerReady();
 
 #endif
