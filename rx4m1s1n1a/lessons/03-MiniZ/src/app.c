@@ -1,10 +1,11 @@
 #include "app.h"
 
-// 1: engine start
-// 2: warning
-// 3: turning
-// 4. engine stop
-// 5. running
+// files in audio SD mini card
+// 0001.mp3: engine start
+// 0002.mp3: warning
+// 0003.mp3: turning
+// 0004.mp3: engine stop
+// 0005.mp3: engine running
 
 static bool isBrakeOn = false;  // 7, 8
 static bool isReverseOn = false;  // 6, 9
