@@ -16,11 +16,11 @@ static bool isHeadLightOn = false;  // 0, 1, 15, 14
 static bool isFlashOn = false; // 3, 4, 11, 12,
 
 void setup() {
-  neoInit(32);
+  neoInit(16);
 }
 
 void onPlayerReady() {
-  mpVolume(30);
+  mpVolume(20);
 }
 
 void loop() {
