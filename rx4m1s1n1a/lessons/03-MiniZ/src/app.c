@@ -30,10 +30,10 @@ void loop() {
   int8_t speed = getChannel(2) * ratio;
 
   if (getChannel(11)) {
-    setMotor(1, -128); // brake
+    setMotor(0, -128); // brake
     isBrakeOn = true;
   } else {
-    setMotor(1, speed);
+    setMotor(0, speed);
     isBrakeOn = false;
   }
 
@@ -85,7 +85,7 @@ void neo() {
   neoSetColor(7, isReverseOn ? COLOR_WHITE : COLOR_RED, brakeBrightness + (isBrakeOn || isReverseOn ? 0x20 : 0));
   neoSetColor(8, isReverseOn ? COLOR_WHITE : COLOR_RED, brakeBrightness + (isBrakeOn || isReverseOn ? 0x20 : 0));
   neoSetColor(6, COLOR_RED, brakeBrightness + (isBrakeOn || isReverseOn ? 0x80 : 0x00));
-  neoSetColor(9, COLOR_RED, brakeBrightness + (isBrakeOn || isReverseOn? 0x80 : 0x00));
+  neoSetColor(9, COLOR_RED, brakeBrightness + (isBrakeOn || isReverseOn ? 0x80 : 0x00));
 
   neoSetColor(10, COLOR_ORANGE, turningBrightness + (isTurnLeftON && (step & 0x02) ? 0x40 : 0));
   neoSetColor(13, COLOR_ORANGE, turningBrightness + (isTurnLeftON && (step & 0x02) ? 0x40 : 0));
