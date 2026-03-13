@@ -37,12 +37,12 @@ void loop() {
     isBrakeOn = false;
   }
 
-  setServo(0, 150 + getChannel(0) * 3 / 10 + getChannel(9) * 1 / 10);
+  setServo(0, 150 + getChannel(3) * 3 / 10 + getChannel(9) * 1 / 10);
 
   isReverseOn = speed < -10;
 
-  isTurnLeftON = getChannel(0) > 10;
-  isTurnRightON = getChannel(0) < -10;
+  isTurnLeftON = getChannel(3) > 10;
+  isTurnRightON = getChannel(3) < -10;
 
   isHeadLightOn = getChannel(13);
   isFlashOn = getChannel(10);
@@ -82,6 +82,9 @@ void neo() {
     headlightBrightness = 0x20;
   }
 
+  neoSetColor(11, COLOR_WHITE, 0x10);
+  neoSetColor(14, COLOR_WHITE, 0x10);
+
   neoSetColor(1, COLOR_RED, brakeBrightness + (isBrakeOn || isReverseOn ? 0x80 : 0x00));
   neoSetColor(2, COLOR_RED, brakeBrightness + (isBrakeOn || isReverseOn ? 0x80 : 0x00));
   neoSetColor(3, isReverseOn ? COLOR_WHITE : COLOR_RED, brakeBrightness + (isBrakeOn || isReverseOn ? 0x20 : 0));
@@ -104,10 +107,9 @@ void neo() {
 
   for (uint8_t i = 18; i < 24; i++) {
     neoSetColor(i, COLOR_WHITE, isFlashOn ? 0x80 : 0);
+    // neoSetColor(i, step & 0x02 ? COLOR_RED : COLOR_BLUE, isFlashOn && !(step & 0x01) ? 0x80 : 0);
   }
-  neoSetColor(11, COLOR_WHITE, isFlashOn ? 0x80 : 0);
-  neoSetColor(14, COLOR_WHITE, isFlashOn ? 0x80 : 0);
-  // neoSetColor(11, step & 0x02 ? COLOR_PURPLE : COLOR_BLUE, isFlashOn && !(step & 0x01) ? 0x80 : 0);
+
   // neoSetColor(4, step & 0x04 ? COLOR_PURPLE : COLOR_BLUE, isFlashOn && (step & 0x01) ? 0x80 : 0);
   // neoSetColor(11, step & 0x04 ? COLOR_BLUE : COLOR_PURPLE, isFlashOn && !(step & 0x01) ? 0x80 : 0);
 
