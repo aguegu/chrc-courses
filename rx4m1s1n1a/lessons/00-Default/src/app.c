@@ -27,5 +27,7 @@ void neo() {
     neoSetHSL(i, (360 / pixelCount) * ((i + step) % pixelCount), 0xff, 0x08);
   }
 
+  neoSetColor(step % pixelCount, COLOR_WHITE, 0x40);
+
   step++;
 }
