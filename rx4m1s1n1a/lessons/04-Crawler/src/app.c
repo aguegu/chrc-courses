@@ -15,6 +15,9 @@ static bool isTurnRightON = false; // 5, 2
 static bool isHeadLightOn = false;  // 0, 1, 15, 14
 static bool isFlashOn = false; // 3, 4, 11, 12,
 
+#define CHN_THROTTLE 1
+#define CHN_YAW 0
+
 void setup() {
   neoInit(24);
 }
@@ -27,7 +30,7 @@ void loop() {
   static bool isSoundOn = false;
 
   float ratio = (getChannel(8) + 127) / 254.0;
-  int8_t speed = getChannel(2) * ratio;
+  int8_t speed = - getChannel(CHN_THROTTLE) * ratio;
 
   if (getChannel(11)) {
     setMotor(1, -128); // brake
@@ -37,12 +40,12 @@ void loop() {
     isBrakeOn = false;
   }
 
-  setServo(0, 150 + getChannel(3) * 3 / 10 + getChannel(9) * 1 / 10);
+  setServo(0, 150 + getChannel(CHN_YAW) * 3 / 10 + getChannel(9) * 1 / 10);
 
   isReverseOn = speed < -10;
 
-  isTurnLeftON = getChannel(3) > 10;
-  isTurnRightON = getChannel(3) < -10;
+  isTurnLeftON = getChannel(CHN_YAW) > 10;
+  isTurnRightON = getChannel(CHN_YAW) < -10;
 
   isHeadLightOn = getChannel(13);
   isFlashOn = getChannel(10);
