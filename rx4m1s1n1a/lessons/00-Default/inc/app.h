@@ -32,7 +32,7 @@ int8_t getChannel(uint8_t index);
 /**
  * Set motor output value.
  *
- * @param index Motor index (0-3 for RX4M3S1N)
+ * @param index Motor index (0-3 for RX4M1S1N1A)
  * @param value Signed 8-bit value (-128 to 127) representing motor speed and direction.
  *              The value represents PWM duty cycle percentage:
  *              - 127: 100% PWM duty cycle in one direction
@@ -47,7 +47,7 @@ void setMotor(uint8_t index, int8_t value);
 /**
  * Set servo output value.
  *
- * @param index Servo index (0-2 for RX4M3S1N)
+ * @param index Servo index (0 for RX4M1S1N1A)
  * @param value Unsigned 8-bit value (0-255) representing servo position.
  *              The value corresponds to PWM high-level pulse width in
  *              0.01ms units within a 20ms period, providing a range of
@@ -65,7 +65,7 @@ void setServo(uint8_t index, uint8_t value);
 /**
  * Get current motor output value.
  *
- * @param index Motor index (0-3 for RX4M3S1N)
+ * @param index Motor index (0-3 for RX4M1S1N1A)
  * @return Signed 8-bit value (-128 to 127) representing the current
  *         motor output value set by setMotor().
  */
@@ -74,7 +74,7 @@ int8_t getMotor(uint8_t index);
 /**
  * Get current servo output value.
  *
- * @param index Servo index (0-2 for RX4M3S1N)
+ * @param index Servo index (0 for RX4M1S1N1A)
  * @return Unsigned 8-bit value (0-255) representing the current
  *         servo output value set by setServo().
  */

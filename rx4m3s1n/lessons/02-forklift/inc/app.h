@@ -151,6 +151,13 @@ void neoSetHSL(uint8_t n, uint16_t hue, uint8_t saturation, uint8_t lightness);
  */
 void neoSetColor(uint8_t index, uint16_t color, uint8_t lightness);
 
+/**
+ * Called when the RF link has been lost for longer than the debounce
+ * window (MAIN_DISCONNECT_EVT fires after RX_WATCHDOG_MS without a
+ * packet). Implement this to put actuators into a safe state (e.g.
+ * zero motors, center servos). Cancelled automatically if the link
+ * recovers before the timer expires.
+ */
 void onDisconnect();
 
 #endif
