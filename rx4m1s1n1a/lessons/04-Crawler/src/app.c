@@ -19,7 +19,7 @@ static bool isFlashOn = false; // 3, 4, 11, 12,
 #define CHN_YAW 0
 
 void setup() {
-  neoInit(24);
+  neoSetup(24);
 }
 
 void onPlayerReady() {

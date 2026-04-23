@@ -86,7 +86,7 @@ uint8_t getServo(uint8_t index);
  * Implement this function to perform one-time setup tasks such as
  * initializing variables, configuring hardware peripherals, or
  * setting default motor/servo positions. For Neopixel initialization,
- * call neoInit() within setup() to configure the LED count.
+ * call neoSetup() within setup() to configure the LED count.
  */
 void setup();
 
@@ -122,15 +122,14 @@ void neo();
  * in the connected Neopixel strip. Must be called before using any
  * other Neopixel functions.
  *
- * @param pixelCount Number of LEDs in the Neopixel strip (1-16).
- *                   Limited by available memory.
+ * @param pixelCount Number of LEDs in the Neopixel strip (1-32).
  */
-void neoInit(uint8_t pixelCount);
+void neoSetup(uint8_t pixelCount);
 
 /**
  * Set Neopixel LED color using HSL (Hue, Saturation, Lightness) color model.
  *
- * @param n LED index (0 to pixelCount-1, as configured by neoInit())
+ * @param n LED index (0 to pixelCount-1, as configured by neoSetup())
  * @param hue Hue value (0-359 degrees on color wheel)
  * @param saturation Saturation value (0-255, 0 = grayscale, 255 = full color)
  * @param lightness Lightness value (0-255, 0 = off, 255 = maximum brightness)
@@ -146,10 +145,12 @@ void neoSetHSL(uint8_t n, uint16_t hue, uint8_t saturation, uint8_t lightness);
  * equals 360, it's equivalent to neoSetHSL(index, 0, 0, lightness) (white,
  * saturation zero).
  *
- * @param index LED index (0 to pixelCount-1, as configured by neoInit())
+ * @param index LED index (0 to pixelCount-1, as configured by neoSetup())
  * @param color Color value (0-359 for hue, 360 for white)
  * @param lightness Lightness value (0-255, 0 = off, 255 = maximum brightness)
  */
 void neoSetColor(uint8_t index, uint16_t color, uint8_t lightness);
+
+void onDisconnect();
 
 #endif

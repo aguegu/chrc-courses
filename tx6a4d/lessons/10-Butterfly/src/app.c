@@ -15,12 +15,12 @@ int8_t getStickNeutral(uint8_t index, uint8_t deadzone) {
 void loop() {
   static bool buttonsLast[4] = { false, false, false, false };
 
-  setChannel(0, getStickNeutral(0));
-  setChannel(1, getStickNeutral(1));
+  setChannel(0, getStickNeutral(0, 4));
+  setChannel(1, getStickNeutral(1, 4));
 
   setChannel(2, getStick(2));
 
-  setChannel(3, getStickNeutral(3));
+  setChannel(3, getStickNeutral(3, 4));
 
   setChannel(4, getStick(4));
   setChannel(5, getStick(5));

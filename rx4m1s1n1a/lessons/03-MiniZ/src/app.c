@@ -16,7 +16,7 @@ static bool isHeadLightOn = false;  // 0, 1, 15, 14
 static bool isFlashOn = false; // 3, 4, 11, 12,
 
 void setup() {
-  neoInit(16);
+  neoSetup(16);
 }
 
 void onPlayerReady() {

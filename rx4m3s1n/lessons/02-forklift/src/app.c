@@ -12,7 +12,7 @@ static bool ledsRightOn = false;
 static bool ledsCeilOn = false;
 
 void setup() {
-  neoInit(pixelCount);
+  neoSetup(pixelCount);
 }
 
 void loop() {

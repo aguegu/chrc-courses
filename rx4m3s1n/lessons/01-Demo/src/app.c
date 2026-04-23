@@ -3,7 +3,7 @@
 static uint8_t pixelCount = 16;
 
 void setup() {
-  neoInit(pixelCount);
+  neoSetup(pixelCount);
 }
 
 void loop() {
