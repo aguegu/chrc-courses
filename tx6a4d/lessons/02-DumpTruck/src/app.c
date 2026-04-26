@@ -1,5 +1,16 @@
 #include "app.h"
 
+#define STK_ENGINE 1
+#define STK_TURN 0
+#define STK_LIFT 2
+
+#define STK_THROTTLE 4
+#define STK_BIAS 5
+
+#define CHN_ENGINE 1
+#define CHN_TURN 4
+#define CHN_LIFT 3
+
 int8_t getStickNeutral(uint8_t index, uint8_t deadzone) {
   int8_t v = getStick(index);
   if (v > deadzone) {
@@ -11,11 +22,10 @@ int8_t getStickNeutral(uint8_t index, uint8_t deadzone) {
 }
 
 void loop() {
-  setChannel(1, - getStickNeutral(2, 5) / 2); // Engine
-  setChannel(2, - getStickNeutral(1, 0x40)); // Lift
+  uint8_t throttle = getStick(STK_THROTTLE) + 127;
 
-  setChannel(3, - getStick(4)); // Led
+  setChannel(CHN_ENGINE, - getStickNeutral(STK_ENGINE, 5) * throttle / 254);
+  setChannel(CHN_LIFT, getStickNeutral(STK_LIFT, 0x20));
 
-  setChannel(4, getStickNeutral(0, 5) / 2); // Turn
-  setChannel(5, getStick(5)); // differential Lock
+  setChannel(CHN_TURN, getStickNeutral(STK_TURN, 5) * 3 / 4 + getStick(STK_BIAS) / 4);
 }

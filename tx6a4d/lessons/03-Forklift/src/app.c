@@ -1,5 +1,23 @@
 #include "app.h"
 
+#define STK_ENGINE 2
+#define STK_LIFT 1
+#define STK_TURN 0
+#define STK_PITCH 3
+
+#define STK_THROTTLE 4
+#define STK_BIAS 5
+
+#define BTN_ENGINE_BRAKE 1
+#define BTN_LIFT_BRAKE 2
+#define BTN_LED 3
+
+#define CHN_TURN 4
+#define CHN_ENGINE 3
+#define CHN_LIFT 2
+#define CHN_PITCH 1
+#define CHN_LED 0
+
 int8_t getStickNeutral(uint8_t index, uint8_t deadzone) {
   int8_t v = getStick(index);
   if (v > deadzone) {
@@ -16,13 +34,23 @@ int8_t stickToMotor(uint8_t index, uint8_t deadzone) {
 }
 
 void loop() {
-  setChannel(0, stickToMotor(3, 5) / 2); // Pitch
-  setChannel(1, - stickToMotor(2, 5) / 2); // Engine
-  setChannel(2, stickToMotor(1, 5)); // Lift
+  uint8_t throttle = getStick(STK_THROTTLE) + 127;
 
-  setChannel(3, - getStick(4)); // Led
+  setChannel(CHN_PITCH, stickToMotor(STK_PITCH, 0x20) / 4);
 
-  setChannel(4, getStick(0) / 2); // Turn
+  if (getButton(BTN_ENGINE_BRAKE)) {
+    setChannel(CHN_ENGINE, -128);
+  } else {
+    setChannel(CHN_ENGINE, - stickToMotor(STK_ENGINE, 5) * throttle / 254);
+  }
 
-  setChannel(6, getButton(3));  // Start
+  if (getButton(BTN_LIFT_BRAKE)) {
+    setChannel(CHN_LIFT, -128);
+  } else {
+    setChannel(CHN_LIFT, stickToMotor(STK_LIFT, 5) / 4);
+  }
+
+  setChannel(CHN_TURN, getStickNeutral(STK_TURN, 5) * 2 / 3 + getStick(STK_BIAS) / 3);
+
+  setChannel(CHN_LED, getButton(BTN_LED) ? 0x40 : 0);
 }
