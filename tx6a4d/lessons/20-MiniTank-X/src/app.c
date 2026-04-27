@@ -36,4 +36,7 @@ void loop() {
 
   setChannel(CHN_R, right * speed / m);
   setChannel(CHN_L, left * speed / m);
+
+  setChannel(2, getStickNeutral(2, 5));
+  setChannel(3, getStickNeutral(3, 5));
 }

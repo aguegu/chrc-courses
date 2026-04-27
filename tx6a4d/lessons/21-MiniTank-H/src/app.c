@@ -22,4 +22,8 @@ void loop() {
 
   setChannel(CHN_L, getStickNeutral(STK_L, 5) * speed / 254);
   setChannel(CHN_R, getStickNeutral(STK_R, 5) * speed / 254);
+
+  setChannel(2, getStickNeutral(0, 5));
+  setChannel(3, getStickNeutral(3, 5));
+}
 }
