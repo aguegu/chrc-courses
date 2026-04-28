@@ -34,8 +34,8 @@ void loop() {
 
   uint16_t speed = (getStick(STK_SPEED) + 127) / 2;
 
+  setChannel(CHN_L, - left * speed / m);
   setChannel(CHN_R, right * speed / m);
-  setChannel(CHN_L, left * speed / m);
 
   setChannel(2, getStickNeutral(2, 5));
   setChannel(3, getStickNeutral(3, 5));
