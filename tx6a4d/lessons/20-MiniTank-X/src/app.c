@@ -6,6 +6,12 @@
 
 #define STK_Y 1
 #define STK_X 0
+
+#define STK_L 2
+#define STK_R 1
+
+#define STK_MODE 5
+
 #define STK_SPEED 4
 
 #define CHN_L 0
@@ -34,9 +40,11 @@ void loop() {
 
   uint16_t speed = (getStick(STK_SPEED) + 127) / 2;
 
-  setChannel(CHN_L, - left * speed / m);
-  setChannel(CHN_R, right * speed / m);
-
-  setChannel(2, getStickNeutral(2, 5));
-  setChannel(3, getStickNeutral(3, 5));
+  if (getStick(STK_MODE) < -0x40) {  // X
+    setChannel(CHN_L, + left * speed / m);
+    setChannel(CHN_R, - right * speed / m);
+  } else {  // H
+    setChannel(CHN_L, + getStickNeutral(STK_L, 5) * speed / 254);
+    setChannel(CHN_R, - getStickNeutral(STK_R, 5) * speed / 254);
+  }
 }

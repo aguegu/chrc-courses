@@ -26,4 +26,3 @@ void loop() {
   setChannel(2, getStickNeutral(0, 5));
   setChannel(3, getStickNeutral(3, 5));
 }
-}
