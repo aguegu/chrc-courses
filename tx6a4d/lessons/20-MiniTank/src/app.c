@@ -4,8 +4,11 @@
 #define MAX(n,m)   (((n) < (m)) ? (m) : (n))
 #endif
 
-#define STK_Y 1
-#define STK_X 0
+#define STK_Y_R 1
+#define STK_X_R 0
+
+#define STK_Y_L 2
+#define STK_X_L 3
 
 #define STK_L 2
 #define STK_R 1
@@ -33,14 +36,18 @@ int8_t getStickNeutral(uint8_t index, uint8_t deadzone) {
 }
 
 void loop() {
-  int16_t left = getStickNeutral(STK_Y, 5) - getStickNeutral(STK_X, 5);
-  int16_t right = getStickNeutral(STK_Y, 5) + getStickNeutral(STK_X, 5);
-
-  uint16_t m = maxIn3(abs(left), abs(right), 127);
-
   uint16_t speed = (getStick(STK_SPEED) + 127) / 2;
 
-  if (getStick(STK_MODE) < -0x40) {  // X
+  if (getStick(STK_MODE) < -0x40) {  // X on right
+    int16_t left = getStickNeutral(STK_Y_R, 5) - getStickNeutral(STK_X_R, 5);
+    int16_t right = getStickNeutral(STK_Y_R, 5) + getStickNeutral(STK_X_R, 5);
+    uint16_t m = maxIn3(abs(left), abs(right), 127);
+    setChannel(CHN_L, + left * speed / m);
+    setChannel(CHN_R, - right * speed / m);
+  } else if (getStick(STK_MODE) > 0x40) { // X on left
+    int16_t left = getStickNeutral(STK_Y_L, 5) - getStickNeutral(STK_X_L, 5);
+    int16_t right = getStickNeutral(STK_Y_L, 5) + getStickNeutral(STK_X_L, 5);
+    uint16_t m = maxIn3(abs(left), abs(right), 127);
     setChannel(CHN_L, + left * speed / m);
     setChannel(CHN_R, - right * speed / m);
   } else {  // H
