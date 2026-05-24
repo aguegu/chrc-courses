@@ -10,3 +10,8 @@ void loop() {
   setServo(1, 150 + getChannel(5) * 2 / 5);
   setServo(2, 150 + getChannel(6) * 2 / 5);
 }
+
+void onDisconnect() {
+  for (uint8_t i = 0; i < 4; i++) setMotor(i, 0);
+  for (uint8_t i = 0; i < 3; i++) setServo(i, 150);  
+}
