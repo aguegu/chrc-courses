@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-/**
+/*
  * Common color hue values for use with neoSetHSL() and neoSetColor() functions.
  * Hue values range from 0-359 degrees on the color wheel.
  */
