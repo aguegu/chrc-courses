@@ -27,6 +27,9 @@ void loop() {
 
   if (!chnLast[9] && getChannel(9)) {
     isSoundOn = !isSoundOn;
+    if (!isSoundOn) {
+      mpStop();
+    }
   }
 
   if (isSoundOn) {
