@@ -165,6 +165,15 @@ void neoSetColor(uint8_t index, uint16_t color, uint8_t lightness);
 void mpPlay(uint16_t filesn, bool force);
 
 /**
+ * Stop playback on the attached MP3 module.
+ *
+ * Halts the current track immediately (BUSY line returns low). After
+ * a stop, the next mpPlay() — with or without `force` — starts cleanly
+ * from idle.
+ */
+void mpStop(void);
+
+/**
  * Set the audio module's playback volume.
  *
  * @param value Volume level 0–30 (module has 31 steps including mute).
