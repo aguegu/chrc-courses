@@ -23,6 +23,6 @@ void loop() {
   if (getChannel(6)) {
     setMotor(0, -128); // brake
   } else {
-    setMotor(0, centered(1, 2) * speed / 254); // speed-limited throttle
+    setMotor(0, centered(1, 2) * speed / 255); // speed-limited throttle
   }
 }

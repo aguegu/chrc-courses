@@ -22,7 +22,7 @@ void loop() {
   if (getChannel(7)) {               // engine brake (button 1)
     setMotor(0, -128);
   } else {                           // fwd/back on left stick Y, speed-limited
-    setMotor(0, -stickToMotor(2, 5) * throttle / 254);
+    setMotor(0, -stickToMotor(2, 5) * throttle / 255);
   }
 
   // steering: right stick X + bias knob (ch5) -> servo SM0
