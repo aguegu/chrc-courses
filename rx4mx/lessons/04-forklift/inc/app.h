@@ -15,8 +15,8 @@
 // headers are left over become your servo channels.
 // ===========================================================================
 
-#define AUDIO_ON_SM1_SM2 1   // 1 = MP3 module on SM1+SM2; 0 = SM1, SM2 are servos
-#define NEO_ON_SM3       1   // 1 = neopixel on SM3;       0 = SM3 is a servo
+#define AUDIO_ON_SM1_SM2 0   // 1 = MP3 module on SM1+SM2; 0 = SM1, SM2 are servos
+#define NEO_ON_SM3       0   // 1 = neopixel on SM3;       0 = SM3 is a servo
 
 // ===========================================================================
 // Layer 2 — Derived configuration (generated from the survey; don't edit)

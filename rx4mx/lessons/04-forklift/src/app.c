@@ -15,16 +15,6 @@ static int8_t stickToMotor(uint8_t index, uint8_t deadzone) {
   return (int8_t)(f * f * 127.0f * (f > 0 ? 1 : -1));
 }
 
-static bool lightsOn = false;
-
-void setup() {
-  neoSetup(16);
-}
-
-void onPlayerReady() {
-  mpVolume(15);
-}
-
 void loop() {
   uint16_t throttle = getChannel(4); // left knob: speed limit 0..255
 
@@ -46,16 +36,5 @@ void loop() {
     setMotor(1, -128);
   } else {                           // lift on right stick Y
     setMotor(1, stickToMotor(1, 5) / 4);
-  }
-
-  lightsOn = getChannel(9);          // headlights (button 3)
-
-  mpPlay(5, false);                  // engine-running loop (0005.mp3)
-}
-
-// Headlights: white strip when the light button is on.
-void neo() {
-  for (uint8_t i = 0; i < 16; i++) {
-    neoSetColor(i, COLOR_WHITE, lightsOn ? 0x40 : 0);
   }
 }
