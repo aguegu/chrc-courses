@@ -30,7 +30,7 @@ void onPlayerReady() {
 }
 
 void loop() {
-  int8_t drive = centered(1, 0); // forward / reverse throttle
+  int8_t drive = centered(1, 8); // forward / reverse throttle
   int8_t steer = centered(4, 0); // steering
 
   ledsHeadOn = drive < 0;
@@ -40,12 +40,12 @@ void loop() {
   ledsLeftOn = steer > 0;
   ledsRightOn = steer < 0;
 
-  ledsCeilOn = centered(0, 0) || centered(2, 0);
+  ledsCeilOn = centered(0, 8) || centered(2, 8);
 
-  setMotor(0, centered(0, 0));
+  setMotor(0, centered(0, 8));
   setMotor(1, drive);
-  setMotor(2, centered(2, 0));
-  setMotor(3, centered(3, 0));
+  setMotor(2, centered(2, 8));
+  setMotor(3, centered(3, 8));
 
   setServo(0, 150 + steer * 2 / 5);
 
