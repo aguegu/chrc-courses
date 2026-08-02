@@ -73,7 +73,7 @@ void neo() {
   }
 
   for (uint8_t i = 0; i < 2; i++) {
-    neoSetColor(ledsBrake[i], COLOR_YELLOW, ledsLeftOn && (step & 0x01) ? 0x40 : 0);
+    neoSetColor(ledsLeft[i], COLOR_YELLOW, ledsLeftOn && (step & 0x01) ? 0x40 : 0);
   }
 
   for (uint8_t i = 0; i < 2; i++) {
