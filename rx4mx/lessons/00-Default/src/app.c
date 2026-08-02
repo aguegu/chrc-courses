@@ -19,11 +19,12 @@ void loop() {
   setMotor(2, centered(2, 8));
   setMotor(3, centered(3, 8));
 
-  // Knob channels 4 and 5 each drive a mirrored servo pair: SM0/SM1 rise with
-  // the knob while SM2/SM3 fall (raw 0..255 → ~1.0-2.0 ms pulse).
-  setServo(0, 100 + getChannel(4) * 2 / 5);
-  setServo(1, 100 + getChannel(5) * 2 / 5);
+  // Knob channels 4 and 5 each drive a mirrored servo pair around center
+  // (150 = 1.5 ms): SM0/SM1 follow the knob, SM2/SM3 mirror it. Reusing
+  // centered(…, 0) parks both at exactly 150 when the knob is centered.
+  setServo(0, 150 + centered(4, 0) * 2 / 5);
+  setServo(1, 150 + centered(5, 0) * 2 / 5);
 
-  setServo(2, 200 - getChannel(4) * 2 / 5);
-  setServo(3, 200 - getChannel(5) * 2 / 5);
+  setServo(2, 150 - centered(4, 0) * 2 / 5);
+  setServo(3, 150 - centered(5, 0) * 2 / 5);
 }
