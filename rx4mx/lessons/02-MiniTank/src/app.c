@@ -27,10 +27,10 @@ static int16_t maxIn3(int16_t a, int16_t b, int16_t c) {
 #define STK_MODE 5  // right knob: pick the drive mode
 #define STK_SPEED 4 // left knob: overall speed limit
 
-// A tank/vehicle driver with three mixing modes, chosen by the mode knob:
-//   knob left  -> arcade on the LEFT stick   (Y = throttle, X = turn)
-//   knob right -> arcade on the RIGHT stick
-//   knob centered -> tank: each stick drives one track directly
+// A tank/vehicle driver with three mixing modes, chosen by the mode knob
+// (ch5): turned one way -> arcade drive from the right stick (Y = throttle,
+// X = turn); the other way -> arcade from the left stick; centered -> tank
+// (each stick drives one track directly).
 // Left track -> motor 0, right track -> motor 1 (negated for mirrored wiring).
 void loop() {
   uint16_t speed = getChannel(STK_SPEED) / 2; // 0..127
