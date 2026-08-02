@@ -51,7 +51,10 @@ void loop() {
   rightOn = steer < -20;
   ceilOn = lift != 0;          // amber beacon while working the fork
 
-  mpPlay(5, false);            // engine-running loop (0005.mp3)
+  // sound: event cues interrupt (force), the engine loop fills the gaps.
+  if (leftOn || rightOn) mpPlay(3, true); // 0003.mp3 turn signal
+  if (lift != 0)         mpPlay(2, true); // 0002.mp3 fork / hydraulics
+  mpPlay(5, false);                       // 0005.mp3 engine idle loop
 }
 
 // LED groups on the 16-pixel ring.
