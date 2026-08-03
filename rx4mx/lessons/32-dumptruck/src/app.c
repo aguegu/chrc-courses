@@ -46,17 +46,17 @@ void loop() {
   }
   soundLast = soundBtn;
 
-  // drive: fwd/back on left stick Y, speed-limited; brake button forces a stop
+  // drive: fwd/back on right stick Y, speed-limited; brake button forces a stop
   uint16_t throttle = getChannel(4);
-  int8_t drive = brakeBtn ? -128 : -stickToMotor(2, 5) * throttle / 255;
+  int8_t drive = brakeBtn ? -128 : -stickToMotor(1, 5) * throttle / 255;
   setMotor(0, drive);
 
   // steering: right stick X + bias knob (ch5) -> servo SM0
   int8_t steer = centered(0, 5) * 2 / 3 + centered(5, 0) / 3;
   setServo(0, 150 + steer * 2 / 5);
 
-  // dump bed: raise / lower on right stick Y
-  int8_t bed = stickToMotor(1, 5) / 2;
+  // dump bed: raise / lower on left stick Y
+  int8_t bed = stickToMotor(2, 5) / 2;
   setMotor(1, bed);
 
   // lighting state
