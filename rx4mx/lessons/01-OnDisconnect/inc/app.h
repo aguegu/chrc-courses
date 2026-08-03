@@ -21,11 +21,11 @@
 // ===========================================================================
 // Layer 2 — Derived configuration (generated from the survey; don't edit)
 // ---------------------------------------------------------------------------
-//   audio neo  servos                 variant
-//    no    no  SM0 SM1 SM2 SM3 (4)    rx4m4s
-//    no   yes  SM0 SM1 SM2     (3)    rx4m3s1n
-//   yes   yes  SM0             (1)    rx4m1s1n1a
-//   yes    no  SM0 SM3         (2*)   rx4m2s1a   (*sparse: index 0 and 3)
+//   audio neo  servos
+//    no    no  SM0 SM1 SM2 SM3 (4)
+//    no   yes  SM0 SM1 SM2     (3)
+//   yes   yes  SM0             (1)
+//   yes    no  SM0 SM3         (2*)   (*sparse: index 0 and 3)
 // ===========================================================================
 
 // Four headers minus those claimed by fitted modules (audio takes 2, neo 1).

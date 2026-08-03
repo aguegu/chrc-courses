@@ -1,14 +1,14 @@
 RX4MX 函数介绍
 ===
 
-`rx4mx` 是一个**配置驱动（config-driven）**的接收机固件：同一套代码，通过 `Project/inc/app.h` 顶部的两个开关，即可适配 `rx4m4s / rx4m3s1n / rx4m2s1a / rx4m1s1n1a` 四种板型。
+`rx4mx` 是一个**配置驱动（config-driven）**的接收机固件：同一套代码，通过 `Project/inc/app.h` 顶部的两个开关（是否装音频模块 / 灯带），即可适配四种硬件组合。
 
 ```
 #define AUDIO_ON_SM1_SM2 0   // 1 = SM1+SM2 接 MP3 音频模块
 #define NEO_ON_SM3       0   // 1 = SM3 接 WS2812 灯带
 ```
 
-PCB 上有 4 个舵机排针 SM0..SM3；音频模块占用 SM1+SM2，灯带占用 SM3，其余作为舵机通道。默认（两个开关都为 0）即 `rx4m4s`：4 路电机 + 4 路舵机。
+PCB 上有 4 个舵机排针 SM0..SM3；音频模块占用 SM1+SM2，灯带占用 SM3，其余作为舵机通道。默认（两个开关都为 0）：4 路电机 + 4 路舵机。
 
 这里出现了一种`输入`量： **Channel（通道）**，也叫信道（信号的通道）。
 
