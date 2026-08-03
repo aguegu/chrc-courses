@@ -77,14 +77,15 @@ void loop() {
 // while the headlights are on, bright overlays on events, blinking turn
 // signals. Physical layout:
 //   headlights 0,1,4,5   left turn 2,9   right turn 3,8
-//   reverse 6,7          brake 10,11
+//   reverse 6,11         brake 7,10
 void neo() {
   static uint8_t step = 0;
-  bool blink = step & 0x02;
+  bool blink = step & 0x02; // turn-signal cadence
+  bool fast = step & 0x01;  // faster cadence for the headlight flash
   uint8_t base = headOn ? 0x08 : 0x00; // running-light glow
 
   // headlights: steady when on; btn1 flashes them bright (flash-to-pass)
-  uint8_t head = flashOn ? (blink ? 0xC0 : 0) : (headOn ? 0x20 : 0);
+  uint8_t head = flashOn ? (fast ? 0xC0 : 0) : (headOn ? 0x20 : 0);
   neoSetColor(0, COLOR_WHITE, head);
   neoSetColor(1, COLOR_WHITE, head);
   neoSetColor(4, COLOR_WHITE, head);
@@ -100,11 +101,11 @@ void neo() {
 
   uint8_t rev = base + (reverseOn ? 0x40 : 0);
   neoSetColor(6, COLOR_WHITE, rev);
-  neoSetColor(7, COLOR_WHITE, rev);
+  neoSetColor(11, COLOR_WHITE, rev);
 
   uint8_t brk = base + (brakeOn ? 0x80 : 0);
+  neoSetColor(7, COLOR_RED, brk);
   neoSetColor(10, COLOR_RED, brk);
-  neoSetColor(11, COLOR_RED, brk);
 
   step++;
 }
