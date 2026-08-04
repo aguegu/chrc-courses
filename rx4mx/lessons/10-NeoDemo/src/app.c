@@ -22,11 +22,21 @@ void loop() {
   setMotor(3, centered(3, 8));
 
   // With NEO_ON_SM3, SM3 drives the LED strip; SM0..SM2 stay servos. SM0/SM1
-  // follow the two knobs (channels 4, 5); SM2 is a two-position servo driven
-  // by button 0 (channel 6): 100 (1.0 ms) released, 200 (2.0 ms) pressed.
+  // follow the two knobs (channels 4, 5).
   setServo(0, 150 + centered(4, 0) * 2 / 5);
   setServo(1, 150 + centered(5, 0) * 2 / 5);
-  setServo(2, getChannel(6) ? 200 : 100);
+
+  // SM2 is a button-nudged position: the four buttons step it up/down —
+  // fine ±1 (btn0/btn1 = ch6/ch7), coarse ±4 (btn2/btn3 = ch8/ch9). Holding a
+  // button ramps it; clamped to a wide 50..250 pulse range.
+  static int16_t sm2 = 150;
+  if (getChannel(6)) sm2 += 1;
+  if (getChannel(7)) sm2 -= 1;
+  if (getChannel(8)) sm2 += 4;
+  if (getChannel(9)) sm2 -= 4;
+  if (sm2 > 250) sm2 = 250;
+  if (sm2 < 50) sm2 = 50;
+  setServo(2, sm2);
 }
 
 // Called ~8 times/second. A single lit pixel walks around the ring, its hue
