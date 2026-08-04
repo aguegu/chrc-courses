@@ -17,7 +17,7 @@ static int8_t stickToMotor(uint8_t index, uint8_t deadzone) {
 
 // Button-controlled state (toggles), plus lighting state from the driving.
 static bool headOn = false; // btn0 toggles the headlights
-static bool soundOn = true;   // btn2 toggles the sound
+static bool soundOn = false;  // btn2 toggles the sound (muted at start)
 static bool hazardOn = false; // btn1 toggles the hazard (warning) lights
 static bool brakeOn, reverseOn, leftOn, rightOn;
 
