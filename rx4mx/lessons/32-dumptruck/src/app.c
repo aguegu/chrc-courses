@@ -17,7 +17,8 @@ static int8_t stickToMotor(uint8_t index, uint8_t deadzone) {
 
 // Button-controlled state (toggles), plus lighting state from the driving.
 static bool headOn = false; // btn0 toggles the headlights
-static bool soundOn = true; // btn2 toggles the sound
+static bool soundOn = true;   // btn2 toggles the sound
+static bool hazardOn = false; // btn1 toggles the hazard (warning) lights
 static bool brakeOn, reverseOn, leftOn, rightOn;
 
 void setup() {
@@ -29,15 +30,19 @@ void onPlayerReady() {
 }
 
 void loop() {
-  static bool lightLast, soundLast;
+  static bool lightLast, hazardLast, soundLast;
 
   // buttons (tx6ax maps btn0..3 -> channels 6..9)
-  bool lightBtn = getChannel(6); // btn0: headlights on/off (toggle)
-  bool soundBtn = getChannel(8); // btn2: sound on/off (toggle)
-  bool brakeBtn = getChannel(9); // btn3: brake (hold)
+  bool lightBtn = getChannel(6);  // btn0: headlights on/off (toggle)
+  bool hazardBtn = getChannel(7); // btn1: hazard lights on/off (toggle)
+  bool soundBtn = getChannel(8);  // btn2: sound on/off (toggle)
+  bool brakeBtn = getChannel(9);  // btn3: brake (hold)
 
   if (lightBtn && !lightLast) headOn = !headOn; // toggle on the press edge
   lightLast = lightBtn;
+
+  if (hazardBtn && !hazardLast) hazardOn = !hazardOn;
+  hazardLast = hazardBtn;
 
   if (soundBtn && !soundLast) {
     soundOn = !soundOn;
@@ -89,11 +94,12 @@ void neo() {
   neoSetColor(4, COLOR_WHITE, head);
   neoSetColor(5, COLOR_WHITE, head);
 
-  uint8_t lt = base + (leftOn && blink ? 0x60 : 0);
+  // turn signals; the hazard toggle blinks both sides together
+  uint8_t lt = base + ((leftOn || hazardOn) && blink ? 0x60 : 0);
   neoSetColor(2, COLOR_ORANGE, lt);
   neoSetColor(9, COLOR_ORANGE, lt);
 
-  uint8_t rt = base + (rightOn && blink ? 0x60 : 0);
+  uint8_t rt = base + ((rightOn || hazardOn) && blink ? 0x60 : 0);
   neoSetColor(3, COLOR_ORANGE, rt);
   neoSetColor(8, COLOR_ORANGE, rt);
 
