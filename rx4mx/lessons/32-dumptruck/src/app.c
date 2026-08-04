@@ -88,8 +88,8 @@ void neo() {
   bool blink = step & 0x02; // turn-signal cadence
   uint8_t base = headOn ? 0x08 : 0x00; // running-light glow
 
-  // headlights: steady white when on
-  uint8_t head = headOn ? 0x20 : 0;
+  // headlights: steady full-brightness white when on
+  uint8_t head = headOn ? 0xFF : 0;
   neoSetColor(0, COLOR_WHITE, head);
   neoSetColor(1, COLOR_WHITE, head);
   neoSetColor(4, COLOR_WHITE, head);
