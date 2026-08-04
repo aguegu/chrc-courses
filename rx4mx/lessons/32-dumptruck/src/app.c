@@ -18,7 +18,7 @@ static int8_t stickToMotor(uint8_t index, uint8_t deadzone) {
 // Button-controlled state (toggles), plus lighting state from the driving.
 static bool headOn = false; // btn0 toggles the headlights
 static bool soundOn = true; // btn2 toggles the sound
-static bool flashOn, brakeOn, reverseOn, leftOn, rightOn;
+static bool brakeOn, reverseOn, leftOn, rightOn;
 
 void setup() {
   neoSetup(12);
@@ -33,7 +33,6 @@ void loop() {
 
   // buttons (tx6ax maps btn0..3 -> channels 6..9)
   bool lightBtn = getChannel(6); // btn0: headlights on/off (toggle)
-  flashOn = getChannel(7);       // btn1: headlight flash (hold)
   bool soundBtn = getChannel(8); // btn2: sound on/off (toggle)
   bool brakeBtn = getChannel(9); // btn3: brake (hold)
 
@@ -81,11 +80,10 @@ void loop() {
 void neo() {
   static uint8_t step = 0;
   bool blink = step & 0x02; // turn-signal cadence
-  bool fast = step & 0x01;  // faster cadence for the headlight flash
   uint8_t base = headOn ? 0x08 : 0x00; // running-light glow
 
-  // headlights: steady when on; btn1 flashes them bright (flash-to-pass)
-  uint8_t head = flashOn ? (fast ? 0xC0 : 0) : (headOn ? 0x20 : 0);
+  // headlights: steady white when on
+  uint8_t head = headOn ? 0x20 : 0;
   neoSetColor(0, COLOR_WHITE, head);
   neoSetColor(1, COLOR_WHITE, head);
   neoSetColor(4, COLOR_WHITE, head);
