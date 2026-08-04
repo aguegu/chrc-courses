@@ -1,5 +1,10 @@
 #include "app.h"
 
+// Motors this forklift drives.
+#define MOTOR_DRIVE 0 // fwd / back
+#define MOTOR_LIFT  1 // fork up / down
+#define MOTOR_PITCH 2 // fork tilt (pitch)
+
 // Center a raw 0..255 stick to a signed -127..+127 swing (see 00-Default).
 static int8_t centered(uint8_t index, uint8_t deadzone) {
   int16_t r = getChannel(index);
@@ -32,16 +37,16 @@ void loop() {
 
   // drive: fwd/back on left stick Y, speed-limited; engine-brake forces stop
   int8_t drive = engineBrake ? -128 : -stickToMotor(2, 5) * throttle / 255;
-  setMotor(0, drive);
+  setMotor(MOTOR_DRIVE, drive);
 
   // steering: right stick X + bias knob (ch5) -> servo SM0
   int8_t steer = centered(0, 5) * 2 / 3 + centered(5, 0) / 3;
   setServo(0, 150 + steer * 2 / 5);
 
   // arm: pitch (left stick X), lift (right stick Y) with a lift brake
-  setMotor(2, stickToMotor(3, 0x20) / 4);
+  setMotor(MOTOR_PITCH, stickToMotor(3, 0x20) / 4);
   int8_t lift = getChannel(8) ? -128 : stickToMotor(1, 5) / 4;
-  setMotor(1, lift);
+  setMotor(MOTOR_LIFT, lift);
 
   // --- lighting, from the driving state ---
   headOn = getChannel(9);      // headlights toggle (button 3)
