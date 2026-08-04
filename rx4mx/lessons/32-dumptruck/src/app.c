@@ -47,7 +47,7 @@ void loop() {
   if (soundBtn && !soundLast) {
     soundOn = !soundOn;
     if (soundOn) mpPlay(1, true); // engine start; 0005 loop takes over after
-    else mpStop();
+    else mpPlay(4, true);         // engine stop (one shot, then silence)
   }
   soundLast = soundBtn;
 
