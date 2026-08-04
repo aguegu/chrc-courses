@@ -15,6 +15,10 @@ static int8_t stickToMotor(uint8_t index, uint8_t deadzone) {
   return (int8_t)(f * f * 127.0f * (f > 0 ? 1 : -1));
 }
 
+#define MOTOR_DRIVE 0 // right stick Y
+#define MOTOR_BED   1 // dump bed, left stick X
+#define SERVO_STEER 0 // steering (SM0)
+
 // Button-controlled state (toggles), plus lighting state from the driving.
 static bool headOn = false; // btn0 toggles the headlights
 static bool soundOn = false;  // btn2 toggles the sound (muted at start)
@@ -54,15 +58,15 @@ void loop() {
   // drive: fwd/back on right stick Y, speed-limited; brake button forces a stop
   uint16_t throttle = getChannel(4);
   int8_t drive = brakeBtn ? -128 : -stickToMotor(1, 5) * throttle / 255;
-  setMotor(0, drive);
+  setMotor(MOTOR_DRIVE, drive);
 
   // steering: right stick X + bias knob (ch5) -> servo SM0
   int8_t steer = centered(0, 5) * 2 / 3 + centered(5, 0) / 3;
-  setServo(0, 150 + steer * 2 / 5);
+  setServo(SERVO_STEER, 150 + steer * 2 / 5);
 
   // dump bed: raise / lower on left stick X
   int8_t bed = stickToMotor(3, 5) / 2;
-  setMotor(1, bed);
+  setMotor(MOTOR_BED, bed);
 
   // lighting state
   reverseOn = drive > 0;

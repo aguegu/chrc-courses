@@ -4,6 +4,7 @@
 #define MOTOR_DRIVE 0 // fwd / back
 #define MOTOR_LIFT  1 // fork up / down
 #define MOTOR_PITCH 2 // fork tilt (pitch)
+#define SERVO_STEER 0 // steering (SM0)
 
 // Center a raw 0..255 stick to a signed -127..+127 swing (see 00-Default).
 static int8_t centered(uint8_t index, uint8_t deadzone) {
@@ -32,7 +33,7 @@ void loop() {
 
   // steering: right stick X + bias knob (ch5) -> servo SM0
   int16_t steer = centered(0, 5) * 2 / 3 + centered(5, 0) / 3;
-  setServo(0, 150 + steer * 2 / 5);
+  setServo(SERVO_STEER, 150 + steer * 2 / 5);
 
   // --- forklift arm ---
   setMotor(MOTOR_PITCH, stickToMotor(3, 0x20) / 4); // pitch on left stick X

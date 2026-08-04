@@ -27,6 +27,9 @@ static int16_t maxIn3(int16_t a, int16_t b, int16_t c) {
 #define STK_MODE 5  // right knob: pick the drive mode
 #define STK_SPEED 4 // left knob: overall speed limit
 
+#define MOTOR_LEFT  0 // left track
+#define MOTOR_RIGHT 1 // right track
+
 // A tank/vehicle driver with three mixing modes, chosen by the mode knob
 // (ch5): turned one way -> arcade drive from the right stick (Y = throttle,
 // X = turn); the other way -> arcade from the left stick; centered -> tank
@@ -40,16 +43,16 @@ void loop() {
     int16_t left = centered(STK_Y_R, 5) - centered(STK_X_R, 5);
     int16_t right = centered(STK_Y_R, 5) + centered(STK_X_R, 5);
     uint16_t m = maxIn3(abs(left), abs(right), 127);
-    setMotor(0, +left * speed / m);
-    setMotor(1, -right * speed / m);
+    setMotor(MOTOR_LEFT, +left * speed / m);
+    setMotor(MOTOR_RIGHT, -right * speed / m);
   } else if (mode > 0x40) { // arcade, left stick
     int16_t left = centered(STK_Y_L, 5) - centered(STK_X_L, 5);
     int16_t right = centered(STK_Y_L, 5) + centered(STK_X_L, 5);
     uint16_t m = maxIn3(abs(left), abs(right), 127);
-    setMotor(0, +left * speed / m);
-    setMotor(1, -right * speed / m);
+    setMotor(MOTOR_LEFT, +left * speed / m);
+    setMotor(MOTOR_RIGHT, -right * speed / m);
   } else { // tank
-    setMotor(0, +centered(STK_L, 5) * speed / 254);
-    setMotor(1, -centered(STK_R, 5) * speed / 254);
+    setMotor(MOTOR_LEFT, +centered(STK_L, 5) * speed / 254);
+    setMotor(MOTOR_RIGHT, -centered(STK_R, 5) * speed / 254);
   }
 }
