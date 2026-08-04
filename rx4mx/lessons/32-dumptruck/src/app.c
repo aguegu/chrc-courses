@@ -67,8 +67,8 @@ void loop() {
   // lighting state
   reverseOn = drive > 0;
   brakeOn = brakeBtn || reverseOn;
-  leftOn = steer > 20;
-  rightOn = steer < -20;
+  leftOn = steer > 0x40;
+  rightOn = steer < -0x40;
 
   // sound: only while enabled; event cues interrupt, engine loop fills gaps.
   if (soundOn) {
