@@ -104,9 +104,11 @@ void neo() {
   neoSetColor(3, COLOR_ORANGE, rt);
   neoSetColor(8, COLOR_ORANGE, rt);
 
+  // reverse cluster: red tail with the running lights, white while reversing
   uint8_t rev = base + (reverseOn ? 0x40 : 0);
-  neoSetColor(6, COLOR_WHITE, rev);
-  neoSetColor(11, COLOR_WHITE, rev);
+  uint16_t revColor = reverseOn ? COLOR_WHITE : COLOR_RED;
+  neoSetColor(6, revColor, rev);
+  neoSetColor(11, revColor, rev);
 
   uint8_t brk = base + (brakeOn ? 0x80 : 0);
   neoSetColor(7, COLOR_RED, brk);
