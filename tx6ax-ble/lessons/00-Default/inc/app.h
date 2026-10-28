@@ -89,6 +89,15 @@ uint8_t getReport(uint8_t index);
 void setBuzzer(bool on);
 
 /**
+ * Mute or unmute the buzzer, if its alarm annoys you (call it in setup() to
+ * start muted). Muted, the buzzer stays silent whatever setBuzzer() asks;
+ * unmuted again, it sounds if setBuzzer() last asked it to.
+ *
+ * @param enable false to mute, true to unmute (the default).
+ */
+void enableBuzzer(bool enable);
+
+/**
  * Application main loop function.
  *
  * Called every 20ms (50Hz) by the firmware scaffold. Implement this function
