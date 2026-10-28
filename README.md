@@ -17,6 +17,8 @@ Examples to customize firmware on Sourcekit&reg; MeshMass&trade; Series DevKits
 
 `rx4mx-ble` is `rx4mx` over Bluetooth LE: the same receiver hardware, survey and motor/servo calls, hosting a standard Bluetooth HID gamepad instead of the RF link. It pairs with `tx6ax-ble` (the `tx6ax` hardware presenting itself as a gamepad) or an off-the-shelf Bluetooth gamepad, and its program reads the gamepad's HID report (`getReport()`) instead of channels. Its lessons follow `rx4mx`'s, with the same vehicle behaviour on the same transmitter.
 
+`tx6ax-ble` is the `tx6ax` hardware as a standard Bluetooth LE HID gamepad (the ShanWan Q34P's report): its program sets the gamepad's report (`setReport()`) instead of channels, sent every 20 ms.
+
 The firmware could be compiled and flashed to the DevKits on
 
   * https://meshmass.com (International)
