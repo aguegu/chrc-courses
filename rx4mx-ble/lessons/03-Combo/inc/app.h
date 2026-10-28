@@ -42,8 +42,7 @@
 // Public API
 // ===========================================================================
 
-// The gamepad report, in Bluetooth mode (meshmass/ble-report.md, a row
-// each): the bytes...
+// The gamepad report, in Bluetooth mode: the bytes...
 #define REPORT_LEN 10
 #define REPORT_X 0        // left stick, horizontal: 0 left, 255 right
 #define REPORT_Y 1        // left stick, vertical: 0 up, 255 down
@@ -74,7 +73,7 @@
 
 /**
  * Read a byte of the gamepad's latest report, as it came (the ShanWan
- * layout: the REPORT_ bytes above; meshmass/ble-report.md has the table).
+ * layout: the REPORT_ bytes above).
  *
  * @param index Byte index (0 to REPORT_LEN - 1; beyond it reads 0)
  * @return The byte: a stick or trigger 0-255 (sticks ~128 at center); the
