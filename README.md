@@ -15,6 +15,8 @@ Examples to customize firmware on Sourcekit&reg; MeshMass&trade; Series DevKits
 
 `rx4mx` is a single config-driven receiver that builds any `rx4m*` shape from two switches at the top of its `app.h` (Audio on SM1+SM2, NeoPixel on SM3). It consumes the raw unsigned protocol and pairs with `tx6ax`.
 
+`rx4mx-ble` is `rx4mx` over Bluetooth LE: the same receiver hardware, survey and motor/servo calls, hosting a standard Bluetooth HID gamepad instead of the RF link. It pairs with `tx6ax-ble` (the `tx6ax` hardware presenting itself as a gamepad) or an off-the-shelf Bluetooth gamepad, and its program reads the gamepad's HID report (`getReport()`) instead of channels. Its lessons follow `rx4mx`'s, with the same vehicle behaviour on the same transmitter.
+
 The firmware could be compiled and flashed to the DevKits on
 
   * https://meshmass.com (International)
