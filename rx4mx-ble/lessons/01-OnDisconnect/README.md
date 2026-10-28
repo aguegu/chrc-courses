@@ -3,7 +3,7 @@ RX4MX-BLE 失联保护（onDisconnect）
 
 本课演示**失联保护**。蓝牙链路断开后（约 1 秒收不到数据包，即链路的监督超时；或遥控器主动断开），系统会自动调用一次 `onDisconnect()`，让你把车辆置于安全状态。
 
-`loop()` 与 `00-Default` 相同：4 个摇杆轴经 `centered()`（死区 8，见 `00-Default`）驱动电机，两个旋钮（`REPORT_LT`、`REPORT_RT`）各驱动一对镜像舵机。
+`loop()` 沿用 `rx4mx` 的同名课程：4 个摇杆轴经 `centered()`（死区 8，见 `00-Default`）驱动 4 路电机，两个旋钮（`REPORT_LT`、`REPORT_RT`）各驱动一对镜像舵机。
 
 新增的回调 **`onDisconnect()`**：把 4 个电机全部停转（`setMotor(i, 0)`），并让所有舵机回到中位（`setServo(i, 150)` = 1.5ms）。
 

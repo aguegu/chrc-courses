@@ -55,6 +55,34 @@ RX4MX-BLE 函数介绍
 
 每收到一份报文，系统调用一次 `loop()`。`tx6ax-ble` 每 20ms 发一次，即 `50Hz`；普通蓝牙手柄只在有变化时才发，静止时可能几秒都不调用——两次之间输出保持不变。
 
-默认程序（见 `src/app.c`）：4 个摇杆轴经 `centered()`（死区 8）驱动 4 路电机；左右两个旋钮（`REPORT_LT`、`REPORT_RT`）各驱动一对“镜像”舵机——SM0/SM1 随旋钮增大，SM2/SM3 反向减小。
+**认手柄：`onPaired()`**
+
+不同的手柄，按键和摇杆并不完全一样（比如 ShanWan Q36 是迷你手柄，没有摇杆，只有十字键）。每次连上一个手柄、准备就绪后（在它的第一份报文之前），系统会调用一次 `onPaired(name)`，`name` 就是手柄自己报的名字，屏幕第 2 行显示的也正是它（太长时会滚动）：
+
+| 手柄 | `name` |
+| - | - |
+| `tx6ax-ble` 遥控器 | `"tx6a4d"` |
+| ShanWan Q34P | `"GamepadSpace-Q34P"` |
+| ShanWan Q36 | `"Q36 for Android"` |
+
+在 `onPaired()` 里用 `strcmp()` 比较名字，记下一个自己定义的编号，`loop()` 再按编号选择映射：
+
+```
+#define PAD_OTHER 0
+#define PAD_Q36 1
+static uint8_t pad;
+
+void onPaired(const char *name) {
+  pad = strcmp(name, "Q36 for Android") == 0 ? PAD_Q36 : PAD_OTHER;
+}
+```
+
+**默认程序**（见 `src/app.c`）：
+
+  * 电机 0 / 1（DM0 / DM1）按 **X 形混控**（arcade）行驶：前后 + 转向合成到左右两路电机（原理见 `02-MiniTank`）。
+  * 一般的手柄（包括 `tx6ax-ble`、Q34P）用**左摇杆**；Q36 没有摇杆，用**十字键**：8 个方向都按满杆处理（`switch` 里一个方向一个 `case`），松开即停。
+  * 按住 **LB**（`tx6ax-ble` 上是按键 0 / L）刹车：两路电机设为 `-128`，优先于摇杆。
+  * 其余输入（右摇杆、扳机、其它按键）默认不用，留给你自己映射。
+  * 失联时（`onDisconnect()`），两路电机停转。
 
 > 换成普通手柄时，LT / RT 是**扳机**，松手回到 `0`；而 `tx6ax-ble` 的旋钮会停在拧到的位置。课程里当作“限速 / 微调”的旋钮，在手柄上就变成了“按住扳机才有”。
