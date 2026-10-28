@@ -34,6 +34,11 @@
 // left, where HID wants 0
 static uint8_t flip(uint8_t v) { return 255 - v; }
 
+void setup() {
+  // the buzzer sounds while the receiver's link is lost; false mutes it
+  enableBuzzer(true);
+}
+
 void loop() {
   setReport(REPORT_X, flip(getStick(STK_X_L)));
   setReport(REPORT_Y, flip(getStick(STK_Y_L)));
@@ -52,6 +57,3 @@ void loop() {
   setReport(REPORT_RT, getStick(KNOB_R));
   setReport(REPORT_LT, getStick(KNOB_L));
 }
-
-// The link lost: the buzzer alerts the user, until a host links again
-void onDisconnect() { setBuzzer(true); }

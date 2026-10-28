@@ -81,21 +81,22 @@ void setReport(uint8_t index, uint8_t value);
 uint8_t getReport(uint8_t index);
 
 /**
- * Sound or quiet the buzzer.
- *
- * @param on true to sound it, false to quiet it. The firmware quiets it
- * itself when a host links again.
- */
-void setBuzzer(bool on);
-
-/**
- * Mute or unmute the buzzer, if its alarm annoys you (call it in setup() to
- * start muted). Muted, the buzzer stays silent whatever setBuzzer() asks;
- * unmuted again, it sounds if setBuzzer() last asked it to.
+ * Mute or unmute the buzzer. The firmware sounds it while the host's link is
+ * lost and quiets it when a host links again; mute it if that alarm annoys
+ * you (call it in setup() to start muted). Unmuted again while the link is
+ * lost, it sounds.
  *
  * @param enable false to mute, true to unmute (the default).
  */
 void enableBuzzer(bool enable);
+
+/**
+ * Initialization function called once at system startup.
+ *
+ * Implement this function to perform one-time setup tasks such as
+ * initializing variables or muting the buzzer (enableBuzzer(false)).
+ */
+void setup();
 
 /**
  * Application main loop function.
@@ -113,9 +114,9 @@ void loop();
 
 /**
  * Called when the host's link is lost (switched off, out of range: no
- * packet for the link's supervision timeout). Implement to alert the user
- * (e.g. setBuzzer(true)); a host linking again quiets the buzzer. Without
- * it, the buzzer sounds.
+ * packet for the link's supervision timeout). The firmware sounds the
+ * buzzer itself (enableBuzzer() mutes it); implement this for anything else
+ * the app should do then. Optional.
  */
 void onDisconnect();
 
