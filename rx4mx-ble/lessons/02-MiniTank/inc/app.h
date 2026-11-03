@@ -84,14 +84,21 @@
 uint8_t getReport(uint8_t index);
 
 /**
- * Called when a pad is linked and ready, on every link, just before its
- * first report runs loop(). Implement to set up a mapping of your own per
- * pad: keep a code for it in a variable that loop() reads.
+ * Called when a pad is linked and ready, on every link (the first and each
+ * reconnect after onDisconnect()), just before its first report runs loop().
+ * Implement to set up a mapping of your own per pad (keep a code for it in a
+ * variable that loop() reads), or to show the link is back.
  *
  * @param name The pad's name, as the pad gives it (its GAP Device Name, up
  * to 19 characters) and as the screen's row 2 shows it: e.g.
  * "GamepadSpace-Q34P", "Q36 for Android", "tx6a4d"; "" for a pad without
  * one. Compare it with strcmp(name, "tx6a4d") == 0.
+ */
+void onConnect(const char *name);
+
+/**
+ * onConnect()'s older name, still called when a Project defines it and not
+ * onConnect(). New code: onConnect().
  */
 void onPaired(const char *name);
 

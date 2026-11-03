@@ -55,9 +55,11 @@ RX4MX-BLE 函数介绍
 
 每收到一份报文，系统调用一次 `loop()`。`tx6ax-ble` 每 20ms 发一次，即 `50Hz`；普通蓝牙手柄只在有变化时才发，静止时可能几秒都不调用——两次之间输出保持不变。
 
-**认手柄：`onPaired()`**
+**认手柄：`onConnect()`**
 
-不同的手柄，按键和摇杆并不完全一样（比如 ShanWan Q36 是迷你手柄，没有摇杆，只有十字键）。每次连上一个手柄、准备就绪后（在它的第一份报文之前），系统会调用一次 `onPaired(name)`，`name` 就是手柄自己报的名字，屏幕第 2 行显示的也正是它（太长时会滚动）：
+（旧版本叫 `onPaired()`，这个名字仍然可用：只写了 `onPaired()` 的程序照样会被调用。新代码请用 `onConnect()`，它和 `onDisconnect()` 正好是一对。）
+
+不同的手柄，按键和摇杆并不完全一样（比如 ShanWan Q36 是迷你手柄，没有摇杆，只有十字键）。每次连上一个手柄、准备就绪后（在它的第一份报文之前），系统会调用一次 `onConnect(name)`，`name` 就是手柄自己报的名字，屏幕第 2 行显示的也正是它（太长时会滚动）：
 
 | 手柄 | `name` |
 | - | - |
@@ -65,14 +67,14 @@ RX4MX-BLE 函数介绍
 | ShanWan Q34P | `"GamepadSpace-Q34P"` |
 | ShanWan Q36 | `"Q36 for Android"` |
 
-在 `onPaired()` 里用 `strcmp()` 比较名字，记下一个自己定义的编号，`loop()` 再按编号选择映射：
+在 `onConnect()` 里用 `strcmp()` 比较名字，记下一个自己定义的编号，`loop()` 再按编号选择映射：
 
 ```
 #define PAD_OTHER 0
 #define PAD_Q36 1
 static uint8_t pad;
 
-void onPaired(const char *name) {
+void onConnect(const char *name) {
   pad = strcmp(name, "Q36 for Android") == 0 ? PAD_Q36 : PAD_OTHER;
 }
 ```

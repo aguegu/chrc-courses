@@ -31,7 +31,7 @@ static int8_t centered(uint8_t byte, uint8_t deadzone) {
 #define PAD_Q36 1
 static uint8_t pad;
 
-void onPaired(const char *name) {
+void onConnect(const char *name) {
   pad = strcmp(name, "Q36 for Android") == 0 ? PAD_Q36 : PAD_OTHER;
 }
 
