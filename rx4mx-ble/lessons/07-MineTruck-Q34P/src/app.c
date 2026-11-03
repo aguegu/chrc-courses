@@ -7,7 +7,7 @@
 //                    STEER_RATIO % of the full swing
 //   RT            -> throttle, DM0 (rear) and DM1 (front), at most DRIVE_MAX
 //                    (the motor driver's protection: 240/255 of full)
-//   LB            -> reverse, held: RT drives DM0 and DM1 backwards
+//   LB            -> the direction, a press flips it: forward / reverse
 //   RB            -> brake, DM0 and DM1 (held: over the throttle)
 //   right stick Y -> the dumper, DM2: up lifts, down lowers
 //   X             -> the LEDs on DM3, a mode a press: off, on, blinking,
@@ -52,6 +52,7 @@ static int8_t trim;          // the centre's bias, in steps of 0.01 ms
 static uint8_t buttons2Last; // REPORT_BUTTONS2 at the last report
 static uint8_t gear;         // gears[]' index, kept through a lost link
 static uint8_t buttons1Last; // REPORT_BUTTONS1 at the last report
+static bool reverse;         // the direction LB set; forward at start
 
 // the LEDs' modes on DM3, one a press of X, round and round; off at start
 #define LED_OFF_MODE 0
@@ -84,20 +85,22 @@ void loop() {
     gear++;
   if ((shifted & BTN1_A) && gear > 0)
     gear--;
+  // LB: the direction flipped, once a press
+  if (shifted & BTN1_LB)
+    reverse = !reverse;
   // X: the LEDs' next mode, once a press
   if (shifted & BTN1_X)
     ledMode = (ledMode + 1) % LED_MODES;
 
   // RB held brakes; else the throttle: RT released 0 (stopped) .. pulled
-  // all the way DRIVE_MAX, times the gear's share, ahead, or astern with LB
-  // held
-  // the same to the rear and the front wheels
+  // all the way DRIVE_MAX, times the gear's share, in LB's direction; the
+  // same to the rear and the front wheels
   int16_t throttle = getReport(REPORT_RT) * DRIVE_MAX / 255;
   throttle = throttle * gears[gear] / 100;
   int8_t drive;
   if (buttons & BTN1_RB)
     drive = BRAKE;
-  else if (buttons & BTN1_LB)
+  else if (reverse)
     drive = -throttle;
   else
     drive = throttle;
