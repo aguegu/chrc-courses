@@ -2,7 +2,7 @@
 
 // MineTruck for the ShanWan Q34P (forked from 06-Combo-Q34P): a mine truck,
 // steered by a servo, its rear and front wheels on a motor each, and a
-// dumper lifted by a third; DM3 for optional LEDs, stepped by X.
+// dumper lifted by a third; DM3 for an optional LED group, X its mode.
 //   left stick X  -> steering, servo SM0 (reversed: the servo's linkage),
 //                    STEER_RATIO % of the full swing
 //   RT            -> throttle, DM0 (rear) and DM1 (front), at most DRIVE_MAX
@@ -10,13 +10,12 @@
 //   LB            -> reverse, held: RT drives DM0 and DM1 backwards
 //   RB            -> brake, DM0 and DM1 (held: over the throttle)
 //   right stick Y -> the dumper, DM2: up lifts, down lowers
-//   X             -> the LEDs on DM3, a step a press: 0, 64, 0, -64, round
-//                    again (two groups wired opposite ways: one lit at +,
-//                    the other at -, neither at 0)
+//   X             -> the LEDs on DM3, a mode a press: off, on, blinking,
+//                    round again
 //   Y / A         -> the gearbox: a gear up / down a press (12/25/50/100 %)
 //   View / Menu   -> SM0's centre a step left / right a press (kept)
 //   link lost     -> DM0 to DM2 braked, the LEDs off (back to the first
-//                    step), SM0 back to its trimmed centre
+//                    mode), SM0 back to its trimmed centre
 
 // Center a raw 0..255 stick to a signed -127..+127 swing (00-Default's).
 static int8_t centered(uint8_t byte, uint8_t deadzone) {
@@ -33,7 +32,8 @@ static int8_t centered(uint8_t byte, uint8_t deadzone) {
 #define MOTOR_REAR 0      // DM0, the rear wheels
 #define MOTOR_FRONT 1     // DM1, the front wheels
 #define MOTOR_DUMPER 2    // DM2, the dumper's lift
-#define LEDS 3            // DM3: optional LEDs, two groups (+ one, - the other)
+#define LEDS 3            // DM3: an optional LED group, on its + side
+#define LED_BRIGHTNESS 64 // DM3 when lit: about half duty (up to DRIVE_MAX)
 #define DUMPER_DEADZONE 4 // the right stick's rest, ignored
 #define BRAKE -128        // setMotor's short brake
 #define TRIM_MAX 40       // the centre's bias, at most 0.4 ms either way
@@ -53,11 +53,12 @@ static uint8_t buttons2Last; // REPORT_BUTTONS2 at the last report
 static uint8_t gear;         // gears[]' index, kept through a lost link
 static uint8_t buttons1Last; // REPORT_BUTTONS1 at the last report
 
-// the LEDs' steps on DM3, one a press of X, round and round: off, the +
-// group lit, off, the - group lit (64: about half duty); the first at start
-static const int8_t xSteps[] = {0, 64, 0, -64};
-#define X_STEPS (sizeof xSteps / sizeof xSteps[0])
-static uint8_t xStep; // xSteps[]' index
+// the LEDs' modes on DM3, one a press of X, round and round; off at start
+#define LED_OFF_MODE 0
+#define LED_ON_MODE 1
+#define LED_BLINK_MODE 2
+#define LED_MODES 3
+static uint8_t ledMode;
 
 void loop() {
   // steering: 1.5 ms centred, reversed (the stick's X is 0 at the left):
@@ -83,9 +84,9 @@ void loop() {
     gear++;
   if ((shifted & BTN1_A) && gear > 0)
     gear--;
-  // X: the LEDs a step on, once a press
+  // X: the LEDs' next mode, once a press
   if (shifted & BTN1_X)
-    xStep = (xStep + 1) % X_STEPS;
+    ledMode = (ledMode + 1) % LED_MODES;
 
   // RB held brakes; else the throttle: RT released 0 (stopped) .. pulled
   // all the way DRIVE_MAX, times the gear's share, ahead, or astern with LB
@@ -108,7 +109,15 @@ void loop() {
   setMotor(MOTOR_DUMPER,
            -centered(REPORT_RZ, DUMPER_DEADZONE) * DRIVE_MAX / 127);
 
-  setMotor(LEDS, xSteps[xStep]);
+  // blinking: toggled every 32 reports, about 0.5 s while the pad is in use
+  // (about 65 reports a second); the pad sends none at rest, so the LEDs
+  // then keep their last state
+  static uint8_t reports;
+  static bool blinkLit;
+  if (++reports % 32 == 0)
+    blinkLit = !blinkLit;
+  bool lit = ledMode == LED_ON_MODE || (ledMode == LED_BLINK_MODE && blinkLit);
+  setMotor(LEDS, lit ? LED_BRIGHTNESS : 0);
 }
 
 // The pad's link lost (switched off, or out of range: nothing heard for the
@@ -119,7 +128,7 @@ void onDisconnect() {
   setMotor(MOTOR_REAR, BRAKE);
   setMotor(MOTOR_FRONT, BRAKE);
   setMotor(MOTOR_DUMPER, BRAKE);
-  setMotor(LEDS, BRAKE); // both terminals together: neither group lit
-  xStep = 0;             // and off when the pad is back, until X again
+  setMotor(LEDS, 0);
+  ledMode = LED_OFF_MODE; // and off when the pad is back, until X again
   setServo(SERVO_STEER, 150 - trim);
 }
