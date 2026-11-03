@@ -8,7 +8,7 @@
 //                   protection: 240/255 of full)
 //   LB           -> reverse, held: RT drives DM0 backwards
 //   RB           -> brake, DM0 (held: over the throttle)
-//   Y / A        -> the gearbox: a gear up / down a press (25/50/75/100 %)
+//   Y / A        -> the gearbox: a gear up / down a press (12/25/50/100 %)
 //   View / Menu  -> SM0's centre a step left / right a press (kept)
 //   link lost    -> DM0 braked, SM0 back to its (trimmed) centre
 
@@ -35,7 +35,7 @@ static int8_t centered(uint8_t byte, uint8_t deadzone) {
 #define DRIVE_MAX 120
 
 // the gearbox: the throttle's share in each gear, in %; the first at start
-static const uint8_t gears[] = {25, 50, 75, 100};
+static const uint8_t gears[] = {12, 25, 50, 100};
 #define GEARS (sizeof gears / sizeof gears[0])
 
 static int8_t trim;          // the centre's bias, in steps of 0.01 ms
