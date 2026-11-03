@@ -2,7 +2,7 @@
 
 // MineTruck for the ShanWan Q34P (forked from 06-Combo-Q34P): a mine truck,
 // steered by a servo, its rear and front wheels on a motor each, and a
-// dumper lifted by a third.
+// dumper lifted by a third; a fourth stepped by X.
 //   left stick X  -> steering, servo SM0 (reversed: the servo's linkage),
 //                    STEER_RATIO % of the full swing
 //   RT            -> throttle, DM0 (rear) and DM1 (front), at most DRIVE_MAX
@@ -10,9 +10,11 @@
 //   LB            -> reverse, held: RT drives DM0 and DM1 backwards
 //   RB            -> brake, DM0 and DM1 (held: over the throttle)
 //   right stick Y -> the dumper, DM2: up lifts, down lowers
+//   X             -> DM3, a step a press: 0, 64, 0, -64, round again
 //   Y / A         -> the gearbox: a gear up / down a press (12/25/50/100 %)
 //   View / Menu   -> SM0's centre a step left / right a press (kept)
-//   link lost     -> DM0, DM1 and DM2 braked, SM0 back to its trimmed centre
+//   link lost     -> DM0 to DM3 braked (DM3's steps back to 0), SM0 back to
+//                    its trimmed centre
 
 // Center a raw 0..255 stick to a signed -127..+127 swing (00-Default's).
 static int8_t centered(uint8_t byte, uint8_t deadzone) {
@@ -29,6 +31,7 @@ static int8_t centered(uint8_t byte, uint8_t deadzone) {
 #define MOTOR_REAR 0      // DM0, the rear wheels
 #define MOTOR_FRONT 1     // DM1, the front wheels
 #define MOTOR_DUMPER 2    // DM2, the dumper's lift
+#define MOTOR_X 3         // DM3, stepped by X
 #define DUMPER_DEADZONE 4 // the right stick's rest, ignored
 #define BRAKE -128        // setMotor's short brake
 #define TRIM_MAX 40       // the centre's bias, at most 0.4 ms either way
@@ -47,6 +50,11 @@ static int8_t trim;          // the centre's bias, in steps of 0.01 ms
 static uint8_t buttons2Last; // REPORT_BUTTONS2 at the last report
 static uint8_t gear;         // gears[]' index, kept through a lost link
 static uint8_t buttons1Last; // REPORT_BUTTONS1 at the last report
+
+// DM3's steps, one a press of X, round and round; the first at start
+static const int8_t xSteps[] = {0, 64, 0, -64};
+#define X_STEPS (sizeof xSteps / sizeof xSteps[0])
+static uint8_t xStep; // xSteps[]' index
 
 void loop() {
   // steering: 1.5 ms centred, reversed (the stick's X is 0 at the left):
@@ -72,6 +80,9 @@ void loop() {
     gear++;
   if ((shifted & BTN1_A) && gear > 0)
     gear--;
+  // X: DM3 a step on, once a press
+  if (shifted & BTN1_X)
+    xStep = (xStep + 1) % X_STEPS;
 
   // RB held brakes; else the throttle: RT released 0 (stopped) .. pulled
   // all the way DRIVE_MAX, times the gear's share, ahead, or astern with LB
@@ -93,6 +104,8 @@ void loop() {
   // DRIVE_MAX either way; no gears
   setMotor(MOTOR_DUMPER,
            -centered(REPORT_RZ, DUMPER_DEADZONE) * DRIVE_MAX / 127);
+
+  setMotor(MOTOR_X, xSteps[xStep]);
 }
 
 // The pad's link lost (switched off, or out of range: nothing heard for the
@@ -103,5 +116,7 @@ void onDisconnect() {
   setMotor(MOTOR_REAR, BRAKE);
   setMotor(MOTOR_FRONT, BRAKE);
   setMotor(MOTOR_DUMPER, BRAKE);
+  setMotor(MOTOR_X, BRAKE);
+  xStep = 0; // not running again by itself when the pad is back
   setServo(SERVO_STEER, 150 - trim);
 }
