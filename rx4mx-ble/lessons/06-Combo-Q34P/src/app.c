@@ -2,7 +2,8 @@
 
 // Combo for the ShanWan Q34P: a car, steered by a servo and driven
 // by one motor.
-//   left stick X -> steering, servo SM0 (reversed: the servo's linkage)
+//   left stick X -> steering, servo SM0 (reversed: the servo's linkage),
+//                   STEER_RATIO % of the full swing
 //   RT           -> throttle, motor DM0, full from about half a pull
 //   LB           -> reverse, held: RT drives DM0 backwards
 //   RB           -> brake, DM0 (held: over the throttle)
@@ -24,6 +25,9 @@ static int8_t centered(uint8_t byte, uint8_t deadzone) {
 #define MOTOR_DRIVE 0 // DM0
 #define BRAKE -128    // setMotor's short brake
 #define TRIM_MAX 40   // the centre's bias, at most 0.4 ms either way
+// the steering's travel, in % of the stick's full swing (100: about 1.0 to
+// 2.0 ms; 50: 1.25 to 1.75 ms)
+#define STEER_RATIO 50
 // the throttle's gain: DM0 = RT x 240 / 255, clamped to 127 (full from RT 135)
 #define THROTTLE_GAIN 240
 
@@ -31,8 +35,8 @@ static int8_t trim;          // the centre's bias, in steps of 0.01 ms
 static uint8_t buttons2Last; // REPORT_BUTTONS2 at the last report
 
 void loop() {
-  // steering: 1.5 ms centred, reversed: about 2.0 ms full left to 1.0 ms
-  // full right (the stick's X is 0 at the left)
+  // steering: 1.5 ms centred, reversed (the stick's X is 0 at the left):
+  // at STEER_RATIO 100 about 2.0 ms full left to 1.0 ms full right
   // View and Menu step the centre once a press (on its edge), in the
   // stick's sense: View as a nudge to the left
   uint8_t buttons2 = getReport(REPORT_BUTTONS2);
@@ -44,7 +48,7 @@ void loop() {
     trim++;
 
   int16_t steer = centered(REPORT_X, 0);
-  setServo(SERVO_STEER, 150 - (steer * 2 / 5 + trim));
+  setServo(SERVO_STEER, 150 - (steer * 2 * STEER_RATIO / 500 + trim));
 
   // RB held brakes; else the throttle: RT released 0 (stopped) .. pulled
   // past 135 full (127: setMotor's most), ahead, or astern with LB held
