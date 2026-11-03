@@ -3,7 +3,7 @@
 // Combo for the ShanWan Q34P: a car, steered by a servo and driven
 // by one motor.
 //   left stick X -> steering, servo SM0 (reversed: the servo's linkage)
-//   RT           -> throttle, motor DM0, up to THROTTLE_MAX
+//   RT           -> throttle, motor DM0, full from about half a pull
 //   LB           -> reverse, held: RT drives DM0 backwards
 //   RB           -> brake, DM0 (held: over the throttle)
 //   View / Menu  -> SM0's centre a step left / right a press (kept)
@@ -19,11 +19,12 @@ static int8_t centered(uint8_t byte, uint8_t deadzone) {
   return 0;
 }
 
-#define SERVO_STEER 0    // SM0
-#define MOTOR_DRIVE 0    // DM0
-#define BRAKE -128       // setMotor's short brake
-#define TRIM_MAX 40      // the centre's bias, at most 0.4 ms either way
-#define THROTTLE_MAX 120 // DM0 at RT pulled all the way (127 the most)
+#define SERVO_STEER 0 // SM0
+#define MOTOR_DRIVE 0 // DM0
+#define BRAKE -128    // setMotor's short brake
+#define TRIM_MAX 40   // the centre's bias, at most 0.4 ms either way
+// the throttle's gain: DM0 = RT x 240 / 255, clamped to 127 (full from RT 135)
+#define THROTTLE_GAIN 240
 
 static int8_t trim;          // the centre's bias, in steps of 0.01 ms
 static uint8_t buttons2Last; // REPORT_BUTTONS2 at the last report
@@ -45,9 +46,11 @@ void loop() {
   setServo(SERVO_STEER, 150 - (steer * 2 / 5 + trim));
 
   // RB held brakes; else the throttle: RT released 0 (stopped) .. pulled
-  // 255 (THROTTLE_MAX), ahead, or astern with LB held
+  // past 135 full (127: setMotor's most), ahead, or astern with LB held
   uint8_t buttons = getReport(REPORT_BUTTONS1);
-  int16_t throttle = getReport(REPORT_RT) * THROTTLE_MAX / 255;
+  int16_t throttle = getReport(REPORT_RT) * THROTTLE_GAIN / 255;
+  if (throttle > 127)
+    throttle = 127;
   if (buttons & BTN1_RB)
     setMotor(MOTOR_DRIVE, BRAKE);
   else if (buttons & BTN1_LB)
