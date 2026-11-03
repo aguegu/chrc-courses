@@ -7,6 +7,7 @@
 //   RT           -> throttle, motor DM0, full from about half a pull
 //   LB           -> reverse, held: RT drives DM0 backwards
 //   RB           -> brake, DM0 (held: over the throttle)
+//   Y / A        -> the gearbox: a gear up / down a press (25/50/75/100 %)
 //   View / Menu  -> SM0's centre a step left / right a press (kept)
 //   link lost    -> DM0 braked, SM0 back to its (trimmed) centre
 
@@ -31,8 +32,14 @@ static int8_t centered(uint8_t byte, uint8_t deadzone) {
 // the throttle's gain: DM0 = RT x 240 / 255, clamped to 127 (full from RT 135)
 #define THROTTLE_GAIN 240
 
+// the gearbox: the throttle's share in each gear, in %; the first at start
+static const uint8_t gears[] = {25, 50, 75, 100};
+#define GEARS (sizeof gears / sizeof gears[0])
+
 static int8_t trim;          // the centre's bias, in steps of 0.01 ms
 static uint8_t buttons2Last; // REPORT_BUTTONS2 at the last report
+static uint8_t gear;         // gears[]' index, kept through a lost link
+static uint8_t buttons1Last; // REPORT_BUTTONS1 at the last report
 
 void loop() {
   // steering: 1.5 ms centred, reversed (the stick's X is 0 at the left):
@@ -50,12 +57,22 @@ void loop() {
   int16_t steer = centered(REPORT_X, 0);
   setServo(SERVO_STEER, 150 - (steer * 2 * STEER_RATIO / 500 + trim));
 
-  // RB held brakes; else the throttle: RT released 0 (stopped) .. pulled
-  // past 135 full (127: setMotor's most), ahead, or astern with LB held
+  // the gearbox: Y a gear up, A a gear down, once a press (its edge)
   uint8_t buttons = getReport(REPORT_BUTTONS1);
+  uint8_t shifted = buttons & ~buttons1Last;
+  buttons1Last = buttons;
+  if ((shifted & BTN1_Y) && gear < GEARS - 1)
+    gear++;
+  if ((shifted & BTN1_A) && gear > 0)
+    gear--;
+
+  // RB held brakes; else the throttle: RT released 0 (stopped) .. pulled
+  // past 135 full (127: setMotor's most), times the gear's share, ahead, or
+  // astern with LB held
   int16_t throttle = getReport(REPORT_RT) * THROTTLE_GAIN / 255;
   if (throttle > 127)
     throttle = 127;
+  throttle = throttle * gears[gear] / 100;
   if (buttons & BTN1_RB)
     setMotor(MOTOR_DRIVE, BRAKE);
   else if (buttons & BTN1_LB)
