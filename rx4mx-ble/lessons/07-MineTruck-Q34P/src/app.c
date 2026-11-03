@@ -15,8 +15,8 @@
 //   Y / A         -> the gearbox: a gear up / down a press (12/25/50/100 %)
 //   View / Menu   -> SM0's centre a step left / right a press (kept)
 //   link lost     -> DM0 to DM2 stopped, the LEDs blinking fast (every 4th
-//                    tick) until the pad is back, SM0 back to its trimmed
-//                    centre
+//                    tick) until the pad is linked again (onPaired), SM0
+//                    back to its trimmed centre
 
 // Center a raw 0..255 stick to a signed -127..+127 swing (00-Default's).
 static int8_t centered(uint8_t byte, uint8_t deadzone) {
@@ -62,7 +62,7 @@ static bool reverse;         // the direction LB set; forward at start
 #define LED_MODES 3
 static uint8_t ledMode;
 static bool blinkLit; // the blinking's phase, flipped every 8th tick
-static bool linkLost; // onDisconnect() till the pad's next report: fast blink
+static bool linkLost; // onDisconnect() till the pad is back: fast blink
 static bool lostLit;  // the fast blinking's phase, flipped every 4th tick
 
 // DM3 as the LEDs' mode says, or the fast blinking while the link is lost
@@ -84,6 +84,14 @@ void tick() {
     blinkLit = !blinkLit;
   if (ticks % 4 == 0)
     lostLit = !lostLit;
+  ledsShow();
+}
+
+// The pad linked and ready again (and at the first link), before any report:
+// the fast blinking stops at once, the LEDs as X set them. A Q34P switched on
+// and left alone sends no report, so loop() alone wouldn't end it
+void onPaired(const char *name) {
+  linkLost = false;
   ledsShow();
 }
 
@@ -145,7 +153,7 @@ void loop() {
 
 // The pad's link lost (switched off, or out of range: nothing heard for the
 // link's supervision timeout): the motors stopped, the wheels straight, and
-// the LEDs blinking fast until the pad's next report runs loop() again (and
+// the LEDs blinking fast until the pad is linked again (onPaired(); then
 // they go back to the mode X set)
 void onDisconnect() {
   setMotor(MOTOR_REAR, 0);
