@@ -1,16 +1,18 @@
 #include "app.h"
 
-// MineTruck for the ShanWan Q34P (forked from 06-Combo-Q34P): a truck,
-// steered by a servo and driven by one motor.
-//   left stick X -> steering, servo SM0 (reversed: the servo's linkage),
-//                   STEER_RATIO % of the full swing
-//   RT           -> throttle, motor DM0, at most DRIVE_MAX (the driver's
-//                   protection: 240/255 of full)
-//   LB           -> reverse, held: RT drives DM0 backwards
-//   RB           -> brake, DM0 (held: over the throttle)
-//   Y / A        -> the gearbox: a gear up / down a press (12/25/50/100 %)
-//   View / Menu  -> SM0's centre a step left / right a press (kept)
-//   link lost    -> DM0 braked, SM0 back to its (trimmed) centre
+// MineTruck for the ShanWan Q34P (forked from 06-Combo-Q34P): a mine truck,
+// steered by a servo, its rear and front wheels on a motor each, and a
+// dumper lifted by a third.
+//   left stick X  -> steering, servo SM0 (reversed: the servo's linkage),
+//                    STEER_RATIO % of the full swing
+//   RT            -> throttle, DM0 (rear) and DM1 (front), at most DRIVE_MAX
+//                    (the motor driver's protection: 240/255 of full)
+//   LB            -> reverse, held: RT drives DM0 and DM1 backwards
+//   RB            -> brake, DM0 and DM1 (held: over the throttle)
+//   right stick Y -> the dumper, DM2: up lifts, down lowers
+//   Y / A         -> the gearbox: a gear up / down a press (12/25/50/100 %)
+//   View / Menu   -> SM0's centre a step left / right a press (kept)
+//   link lost     -> DM0, DM1 and DM2 braked, SM0 back to its trimmed centre
 
 // Center a raw 0..255 stick to a signed -127..+127 swing (00-Default's).
 static int8_t centered(uint8_t byte, uint8_t deadzone) {
@@ -23,10 +25,13 @@ static int8_t centered(uint8_t byte, uint8_t deadzone) {
   return 0;
 }
 
-#define SERVO_STEER 0 // SM0
-#define MOTOR_DRIVE 0 // DM0
-#define BRAKE -128    // setMotor's short brake
-#define TRIM_MAX 40   // the centre's bias, at most 0.4 ms either way
+#define SERVO_STEER 0     // SM0
+#define MOTOR_REAR 0      // DM0, the rear wheels
+#define MOTOR_FRONT 1     // DM1, the front wheels
+#define MOTOR_DUMPER 2    // DM2, the dumper's lift
+#define DUMPER_DEADZONE 4 // the right stick's rest, ignored
+#define BRAKE -128        // setMotor's short brake
+#define TRIM_MAX 40       // the centre's bias, at most 0.4 ms either way
 // the steering's travel, in % of the stick's full swing (100: about 1.0 to
 // 2.0 ms; 50: 1.25 to 1.75 ms)
 #define STEER_RATIO 50
@@ -71,20 +76,32 @@ void loop() {
   // RB held brakes; else the throttle: RT released 0 (stopped) .. pulled
   // all the way DRIVE_MAX, times the gear's share, ahead, or astern with LB
   // held
+  // the same to the rear and the front wheels
   int16_t throttle = getReport(REPORT_RT) * DRIVE_MAX / 255;
   throttle = throttle * gears[gear] / 100;
+  int8_t drive;
   if (buttons & BTN1_RB)
-    setMotor(MOTOR_DRIVE, BRAKE);
+    drive = BRAKE;
   else if (buttons & BTN1_LB)
-    setMotor(MOTOR_DRIVE, -throttle);
+    drive = -throttle;
   else
-    setMotor(MOTOR_DRIVE, throttle);
+    drive = throttle;
+  setMotor(MOTOR_REAR, drive);
+  setMotor(MOTOR_FRONT, drive);
+
+  // the dumper: the right stick's Y (0 up, so negated: up lifts), up to
+  // DRIVE_MAX either way; no gears
+  setMotor(MOTOR_DUMPER,
+           -centered(REPORT_RZ, DUMPER_DEADZONE) * DRIVE_MAX / 127);
 }
 
 // The pad's link lost (switched off, or out of range: nothing heard for the
-// link's supervision timeout): the car braked and its wheels straight, until
-// the pad's next report runs loop() again
+// link's supervision timeout): the truck braked, its dumper held where it is
+// (braked, not let down by its load) and its wheels straight, until the
+// pad's next report runs loop() again
 void onDisconnect() {
-  setMotor(MOTOR_DRIVE, BRAKE);
+  setMotor(MOTOR_REAR, BRAKE);
+  setMotor(MOTOR_FRONT, BRAKE);
+  setMotor(MOTOR_DUMPER, BRAKE);
   setServo(SERVO_STEER, 150 - trim);
 }
