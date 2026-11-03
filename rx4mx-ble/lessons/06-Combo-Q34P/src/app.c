@@ -4,7 +4,8 @@
 // by one motor.
 //   left stick X -> steering, servo SM0 (reversed: the servo's linkage),
 //                   STEER_RATIO % of the full swing
-//   RT           -> throttle, motor DM0, full from about half a pull
+//   RT           -> throttle, motor DM0, at most DRIVE_MAX (the driver's
+//                   protection: 240/255 of full)
 //   LB           -> reverse, held: RT drives DM0 backwards
 //   RB           -> brake, DM0 (held: over the throttle)
 //   Y / A        -> the gearbox: a gear up / down a press (25/50/75/100 %)
@@ -29,8 +30,9 @@ static int8_t centered(uint8_t byte, uint8_t deadzone) {
 // the steering's travel, in % of the stick's full swing (100: about 1.0 to
 // 2.0 ms; 50: 1.25 to 1.75 ms)
 #define STEER_RATIO 50
-// the throttle's gain: DM0 = RT x 240 / 255, clamped to 127 (full from RT 135)
-#define THROTTLE_GAIN 240
+// the drive's ceiling, the motor driver's protection: 240/255 of full power
+// (setMotor's 127), never passed in either direction
+#define DRIVE_MAX 120
 
 // the gearbox: the throttle's share in each gear, in %; the first at start
 static const uint8_t gears[] = {25, 50, 75, 100};
@@ -67,11 +69,9 @@ void loop() {
     gear--;
 
   // RB held brakes; else the throttle: RT released 0 (stopped) .. pulled
-  // past 135 full (127: setMotor's most), times the gear's share, ahead, or
-  // astern with LB held
-  int16_t throttle = getReport(REPORT_RT) * THROTTLE_GAIN / 255;
-  if (throttle > 127)
-    throttle = 127;
+  // all the way DRIVE_MAX, times the gear's share, ahead, or astern with LB
+  // held
+  int16_t throttle = getReport(REPORT_RT) * DRIVE_MAX / 255;
   throttle = throttle * gears[gear] / 100;
   if (buttons & BTN1_RB)
     setMotor(MOTOR_DRIVE, BRAKE);
