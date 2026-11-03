@@ -10,12 +10,13 @@
 //   LB            -> the direction, a press flips it: forward / reverse
 //   RB            -> brake, DM0 and DM1 (held: over the throttle)
 //   right stick Y -> the dumper, DM2: up lifts, down lowers
-//   X             -> the LEDs on DM3, a mode a press: off, on, blinking,
-//                    round again
+//   X             -> the LEDs on DM3, a mode a press: off, on, blinking
+//                    (2 Hz, timed by tick()), round again
 //   Y / A         -> the gearbox: a gear up / down a press (12/25/50/100 %)
 //   View / Menu   -> SM0's centre a step left / right a press (kept)
-//   link lost     -> DM0 to DM2 braked, the LEDs off (back to the first
-//                    mode), SM0 back to its trimmed centre
+//   link lost     -> DM0 to DM2 stopped, the LEDs blinking fast (every 4th
+//                    tick) until the pad is back, SM0 back to its trimmed
+//                    centre
 
 // Center a raw 0..255 stick to a signed -127..+127 swing (00-Default's).
 static int8_t centered(uint8_t byte, uint8_t deadzone) {
@@ -60,8 +61,35 @@ static bool reverse;         // the direction LB set; forward at start
 #define LED_BLINK_MODE 2
 #define LED_MODES 3
 static uint8_t ledMode;
+static bool blinkLit; // the blinking's phase, flipped every 8th tick
+static bool linkLost; // onDisconnect() till the pad's next report: fast blink
+static bool lostLit;  // the fast blinking's phase, flipped every 4th tick
+
+// DM3 as the LEDs' mode says, or the fast blinking while the link is lost
+static void ledsShow(void) {
+  bool lit = linkLost ? lostLit
+                      : ledMode == LED_ON_MODE ||
+                            (ledMode == LED_BLINK_MODE && blinkLit);
+  setMotor(LEDS, lit ? LED_BRIGHTNESS : 0);
+}
+
+// The scaffold's clock, 32 times a second whether the pad sends reports or
+// not (the Q34P sends none at rest, so loop() alone can't keep time): the
+// blinking flips every 8th tick (250 ms lit, 250 ms dark: 2 Hz), the link
+// lost's every 4th (125 ms: twice as fast)
+void tick() {
+  static uint8_t ticks;
+  ++ticks;
+  if (ticks % 8 == 0)
+    blinkLit = !blinkLit;
+  if (ticks % 4 == 0)
+    lostLit = !lostLit;
+  ledsShow();
+}
 
 void loop() {
+  linkLost = false; // a report: the pad is back, the LEDs as X set them
+
   // steering: 1.5 ms centred, reversed (the stick's X is 0 at the left):
   // at STEER_RATIO 100 about 2.0 ms full left to 1.0 ms full right
   // View and Menu step the centre once a press (on its edge), in the
@@ -112,26 +140,18 @@ void loop() {
   setMotor(MOTOR_DUMPER,
            -centered(REPORT_RZ, DUMPER_DEADZONE) * DRIVE_MAX / 127);
 
-  // blinking: toggled every 32 reports, about 0.5 s while the pad is in use
-  // (about 65 reports a second); the pad sends none at rest, so the LEDs
-  // then keep their last state
-  static uint8_t reports;
-  static bool blinkLit;
-  if (++reports % 32 == 0)
-    blinkLit = !blinkLit;
-  bool lit = ledMode == LED_ON_MODE || (ledMode == LED_BLINK_MODE && blinkLit);
-  setMotor(LEDS, lit ? LED_BRIGHTNESS : 0);
+  ledsShow(); // X's change at once; the blinking from tick()
 }
 
 // The pad's link lost (switched off, or out of range: nothing heard for the
-// link's supervision timeout): the truck braked, its dumper held where it is
-// (braked, not let down by its load), the LEDs off and its wheels straight,
-// until the pad's next report runs loop() again
+// link's supervision timeout): the motors stopped, the wheels straight, and
+// the LEDs blinking fast until the pad's next report runs loop() again (and
+// they go back to the mode X set)
 void onDisconnect() {
-  setMotor(MOTOR_REAR, BRAKE);
-  setMotor(MOTOR_FRONT, BRAKE);
-  setMotor(MOTOR_DUMPER, BRAKE);
-  setMotor(LEDS, 0);
-  ledMode = LED_OFF_MODE; // and off when the pad is back, until X again
+  setMotor(MOTOR_REAR, 0);
+  setMotor(MOTOR_FRONT, 0);
+  setMotor(MOTOR_DUMPER, 0);
+  linkLost = true;
+  ledsShow();
   setServo(SERVO_STEER, 150 - trim);
 }

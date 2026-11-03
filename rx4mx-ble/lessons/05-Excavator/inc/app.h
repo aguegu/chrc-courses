@@ -177,6 +177,15 @@ void loop();
  */
 void onDisconnect();
 
+/**
+ * Called 32 times a second (every 31.25 ms), whether reports arrive or
+ * not: a pad sends one only when something on it changes (the ShanWan Q34P
+ * none at rest), so loop() can't keep time. Implement for anything timed,
+ * such as blinking a light. Runs on the same task as loop(): set outputs
+ * here with setMotor() and setServo() as there.
+ */
+void tick();
+
 #if AUDIO_ON_SM1_SM2
 /**
  * Play an audio file on the attached MP3 module.
