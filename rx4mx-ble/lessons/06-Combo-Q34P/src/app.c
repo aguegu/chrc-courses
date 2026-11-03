@@ -7,6 +7,7 @@
 //   LB           -> reverse, held: RT drives DM0 backwards
 //   RB           -> brake, DM0 (held: over the throttle)
 //   View / Menu  -> SM0's centre a step left / right a press (kept)
+//   link lost    -> DM0 braked, SM0 back to its (trimmed) centre
 
 // Center a raw 0..255 stick to a signed -127..+127 swing (00-Default's).
 static int8_t centered(uint8_t byte, uint8_t deadzone) {
@@ -57,4 +58,12 @@ void loop() {
     setMotor(MOTOR_DRIVE, -throttle);
   else
     setMotor(MOTOR_DRIVE, throttle);
+}
+
+// The pad's link lost (switched off, or out of range: nothing heard for the
+// link's supervision timeout): the car braked and its wheels straight, until
+// the pad's next report runs loop() again
+void onDisconnect() {
+  setMotor(MOTOR_DRIVE, BRAKE);
+  setServo(SERVO_STEER, 150 - trim);
 }
