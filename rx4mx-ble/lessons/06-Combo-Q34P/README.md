@@ -7,7 +7,7 @@ RX4MX-BLE 双摇杆小车：ShanWan Q34P 版（Combo-Q34P）
 
 **操作**：
 
-  * 左摇杆横轴（`REPORT_X`）= 方向 → 舵机 SM0（**反向**，适配舵机连杆的安装方向）。中位 1.5 ms；转向幅度由 `STEER_RATIO` 设定，是舵机行程（中位两侧各 0.5 ms，`SERVO_SWING`）的百分比：`50` 时左满约 1.75 ms、右满约 1.25 ms，`100` 时为 2.0 ms 到 1.0 ms。
+  * 左摇杆横轴（`REPORT_X`）= 方向 → 舵机 SM0（**反向**，适配舵机连杆的安装方向）。中位 1.5 ms；转向幅度由 `STEER_RATIO` 设定，是舵机行程（中位两侧各 0.5 ms，`SERVO_STEER_SWING`）的百分比：`50` 时左满约 1.75 ms、右满约 1.25 ms，`100` 时为 2.0 ms 到 1.0 ms。
   * RT 扳机（`REPORT_RT`，`0..255`）= 油门 → 电机 0：`RT × 120 / 255`，再乘挡位比例。松开停止，4 挡扣到底为 `120`（`DRIVE_MAX`）。`120` 是 `setMotor()` 最大值 `127` 的 240/255（约 94%），用来**保护电机驱动**：前进、倒车都不会超过它。
   * Y / A（`BTN1_Y`、`BTN1_A`）= **变速箱**：每按一次升 / 降一挡，共四挡，分别是油门的 12%、25%、50%、100%（`gears[]`，前进、倒车都按此比例）。上电时在 1 挡（12%），最高 4 挡、最低 1 挡；断线后挡位保持不变。
   * 按住 LB（`BTN1_LB`）= **倒挡**：此时 RT 让电机 0 反转。
@@ -23,7 +23,7 @@ pressed = buttons2 & ~buttons2Last;   // 这次新按下的键
 buttons2Last = buttons2;
 ```
 
-**转向**：`舵机 = 150 - (主方向 × SERVO_SWING / 127 × STEER_RATIO / 100 + 微调)`：主方向满舵（±127，`STICK_SWING`）时正好是行程的 `STEER_RATIO`%（代码里写成 `(int32_t)steer * SERVO_SWING * STEER_RATIO / (STICK_SWING * 100)`，先乘后除，整数运算不丢精度；乘积可达 635000，超出 16 位，所以先转成 `int32_t`）。每按一次微调始终是 0.01 ms，但微调的上限随 `STEER_RATIO` 变：两者合起来占满行程（`TRIM_MAX = (100 - STEER_RATIO) × SERVO_SWING / 100`）。主方向取自 `centered()`（见 `00-Default`），HID 横轴 `0` 端在左；前面的减号让方向反过来。微调与摇杆同向：按 View 等于把摇杆往左轻推一点。
+**转向**：`舵机 = 150 - (主方向 × SERVO_STEER_SWING / 127 × STEER_RATIO / 100 + 微调)`：主方向满舵（±127，`STICK_SWING`）时正好是行程的 `STEER_RATIO`%（代码里写成 `(int32_t)steer * SERVO_STEER_SWING * STEER_RATIO / (STICK_SWING * 100)`，先乘后除，整数运算不丢精度；乘积可达 635000，超出 16 位，所以先转成 `int32_t`）。每按一次微调始终是 0.01 ms，但微调的上限随 `STEER_RATIO` 变：两者合起来占满行程（`TRIM_MAX = (100 - STEER_RATIO) × SERVO_STEER_SWING / 100`）。主方向取自 `centered()`（见 `00-Default`），HID 横轴 `0` 端在左；前面的减号让方向反过来。微调与摇杆同向：按 View 等于把摇杆往左轻推一点。
 
 **油门与倒挡**：
 

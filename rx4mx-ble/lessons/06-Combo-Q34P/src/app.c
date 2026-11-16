@@ -26,9 +26,9 @@ static int8_t centered(uint8_t byte, uint8_t deadzone) {
 #define SERVO_STEER 0 // SM0
 #define MOTOR_DRIVE 0 // DM0
 #define BRAKE -128    // setMotor's short brake
-// the servo's swing either side of the 1.5 ms centre, in setServo's
+// the steering servo's swing either side of the 1.5 ms centre, in setServo's
 // 0.01 ms: 1.0 to 2.0 ms, a regular analog servo's range
-#define SERVO_SWING 50
+#define SERVO_STEER_SWING 50
 // the steering's travel, in % of the swing (100: 1.0 to 2.0 ms; 50: 1.25
 // to 1.75 ms)
 #define STEER_RATIO 50
@@ -36,7 +36,7 @@ static int8_t centered(uint8_t byte, uint8_t deadzone) {
 // the centre's bias at most, either way: the rest of the swing, (100 -
 // STEER_RATIO) %, so steering and trim together stay within 1.0 to 2.0 ms
 // (at STEER_RATIO 50: 25 steps, 0.25 ms)
-#define TRIM_MAX ((100 - STEER_RATIO) * SERVO_SWING / 100)
+#define TRIM_MAX ((100 - STEER_RATIO) * SERVO_STEER_SWING / 100)
 // the drive's ceiling, the motor driver's protection: 240/255 of full power
 // (setMotor's 127), never passed in either direction
 #define DRIVE_MAX 120
@@ -65,7 +65,7 @@ void loop() {
 
   int16_t steer = centered(REPORT_X, 0);
   int16_t offset =
-      (int32_t)steer * SERVO_SWING * STEER_RATIO / (STICK_SWING * 100);
+      (int32_t)steer * SERVO_STEER_SWING * STEER_RATIO / (STICK_SWING * 100);
   setServo(SERVO_STEER, 150 - (offset + trim));
 
   // the gearbox: Y a gear up, A a gear down, once a press (its edge)
