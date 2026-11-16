@@ -2,7 +2,7 @@
 
 // Combo for the ShanWan Q34P: a car, steered by a servo and driven
 // by one motor.
-//   left stick X -> steering, servo SM0 (reversed: the servo's linkage),
+//   left stick X -> steering, servo SM0 (left, a shorter pulse),
 //                   STEER_RATIO % of the full swing
 //   RT           -> throttle, motor DM0, at most DRIVE_MAX (the driver's
 //                   protection: 240/255 of full)
@@ -27,15 +27,16 @@ static int8_t centered(uint8_t byte, uint8_t deadzone) {
 #define MOTOR_DRIVE 0 // DM0
 #define BRAKE -128    // setMotor's short brake
 // the steering servo's swing either side of the 1.5 ms centre, in setServo's
-// 0.01 ms: 1.0 to 2.0 ms, a regular analog servo's range
-#define SERVO_STEER_SWING 50
-// the steering's travel, in % of the swing (100: 1.0 to 2.0 ms; 50: 1.25
-// to 1.75 ms)
-#define STEER_RATIO 50
+// 0.01 ms: 0.7 to 2.3 ms, wider than a regular analog servo's 1.0 to 2.0 ms
+// (this car's servo takes it)
+#define SERVO_STEER_SWING 80
+// the steering's travel, in % of the swing (75: 0.9 to 2.1 ms; 100: 0.7 to
+// 2.3 ms)
+#define STEER_RATIO 75
 #define STICK_SWING 127 // centered()'s swing either way
 // the centre's bias at most, either way: the rest of the swing, (100 -
-// STEER_RATIO) %, so steering and trim together stay within 1.0 to 2.0 ms
-// (at STEER_RATIO 50: 25 steps, 0.25 ms)
+// STEER_RATIO) %, so steering and trim together stay within the swing, 0.7
+// to 2.3 ms (at STEER_RATIO 75: 20 steps, 0.2 ms)
 #define TRIM_MAX ((100 - STEER_RATIO) * SERVO_STEER_SWING / 100)
 // the drive's ceiling, the motor driver's protection: 240/255 of full power
 // (setMotor's 127), never passed in either direction
@@ -51,8 +52,8 @@ static uint8_t gear;         // gears[]' index, kept through a lost link
 static uint8_t buttons1Last; // REPORT_BUTTONS1 at the last report
 
 void loop() {
-  // steering: 1.5 ms centred, reversed (the stick's X is 0 at the left):
-  // at STEER_RATIO 100 2.0 ms full left to 1.0 ms full right
+  // steering: 1.5 ms centred, the stick's left a shorter pulse (its X is 0
+  // at the left): at STEER_RATIO 75 0.9 ms full left to 2.1 ms full right
   // View and Menu step the centre once a press (on its edge), in the
   // stick's sense: View as a nudge to the left
   uint8_t buttons2 = getReport(REPORT_BUTTONS2);
@@ -66,7 +67,7 @@ void loop() {
   int16_t steer = centered(REPORT_X, 0);
   int16_t offset =
       (int32_t)steer * SERVO_STEER_SWING * STEER_RATIO / (STICK_SWING * 100);
-  setServo(SERVO_STEER, 150 - (offset + trim));
+  setServo(SERVO_STEER, 150 + (offset + trim));
 
   // the gearbox: Y a gear up, A a gear down, once a press (its edge)
   uint8_t buttons = getReport(REPORT_BUTTONS1);
@@ -95,5 +96,5 @@ void loop() {
 // the pad's next report runs loop() again
 void onDisconnect() {
   setMotor(MOTOR_DRIVE, BRAKE);
-  setServo(SERVO_STEER, 150 - trim);
+  setServo(SERVO_STEER, 150 + trim);
 }
