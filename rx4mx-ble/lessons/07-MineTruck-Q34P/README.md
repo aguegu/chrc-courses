@@ -32,7 +32,7 @@ buttonsLast = buttons;
 
 ## 转向
 
-`舵机 = 150 - (主方向 × 2/5 × STEER_RATIO / 100 + 微调)`（代码里写成 `steer * 2 * STEER_RATIO / 500`，先乘后除，整数运算不丢精度）。主方向取自 `centered()`（见 `00-Default`），HID 横轴 `0` 端在左；前面的减号让方向反过来。每按一次微调始终是 0.01 ms，但微调的上限随 `STEER_RATIO` 变：两者合起来占满行程（`TRIM_MAX = (100 - STEER_RATIO) × SERVO_SWING / 100`）。微调与摇杆同向：按 View 等于把摇杆往左轻推一点。
+`舵机 = 150 - (主方向 × SERVO_SWING / 127 × STEER_RATIO / 100 + 微调)`：主方向满舵（±127，`STICK_SWING`）时正好是行程的 `STEER_RATIO`%（代码里写成 `(int32_t)steer * SERVO_SWING * STEER_RATIO / (STICK_SWING * 100)`，先乘后除，整数运算不丢精度；乘积可达 635000，超出 16 位，所以先转成 `int32_t`）。主方向取自 `centered()`（见 `00-Default`），HID 横轴 `0` 端在左；前面的减号让方向反过来。每按一次微调始终是 0.01 ms，但微调的上限随 `STEER_RATIO` 变：两者合起来占满行程（`TRIM_MAX = (100 - STEER_RATIO) × SERVO_SWING / 100`）。微调与摇杆同向：按 View 等于把摇杆往左轻推一点。
 
 ## 油门、方向与刹车
 

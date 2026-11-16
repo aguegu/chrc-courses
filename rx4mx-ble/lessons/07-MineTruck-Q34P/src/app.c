@@ -40,9 +40,10 @@ static int8_t centered(uint8_t byte, uint8_t deadzone) {
 // the servo's swing either side of the 1.5 ms centre, in setServo's
 // 0.01 ms: 1.0 to 2.0 ms, a regular analog servo's range
 #define SERVO_SWING 50
-// the steering's travel, in % of the swing (100: about 1.0 to 2.0 ms; 50:
-// 1.25 to 1.75 ms)
+// the steering's travel, in % of the swing (100: 1.0 to 2.0 ms; 50: 1.25
+// to 1.75 ms)
 #define STEER_RATIO 50
+#define STICK_SWING 127 // centered()'s swing either way
 // the centre's bias at most, either way: the rest of the swing, (100 -
 // STEER_RATIO) %, so steering and trim together stay within 1.0 to 2.0 ms
 // (at STEER_RATIO 50: 25 steps, 0.25 ms)
@@ -105,7 +106,7 @@ void loop() {
   linkLost = false; // a report: the pad is back, the LEDs as X set them
 
   // steering: 1.5 ms centred, reversed (the stick's X is 0 at the left):
-  // at STEER_RATIO 100 about 2.0 ms full left to 1.0 ms full right
+  // at STEER_RATIO 100 2.0 ms full left to 1.0 ms full right
   // View and Menu step the centre once a press (on its edge), in the
   // stick's sense: View as a nudge to the left
   uint8_t buttons2 = getReport(REPORT_BUTTONS2);
@@ -117,7 +118,9 @@ void loop() {
     trim++;
 
   int16_t steer = centered(REPORT_X, 0);
-  setServo(SERVO_STEER, 150 - (steer * 2 * STEER_RATIO / 500 + trim));
+  int16_t offset =
+      (int32_t)steer * SERVO_SWING * STEER_RATIO / (STICK_SWING * 100);
+  setServo(SERVO_STEER, 150 - (offset + trim));
 
   // the gearbox: Y a gear up, A a gear down, once a press (its edge)
   uint8_t buttons = getReport(REPORT_BUTTONS1);
