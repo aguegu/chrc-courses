@@ -1,20 +1,36 @@
 #include "app.h"
 
 // TrackedLoader for the ShanWan Q36: a tracked loader, driven by the Q36
-// alone (mode switch on D, "Q36 for Android"). This first step is
-// 02-MiniTank's drive on the Q36's D-pad: the Q36 has no sticks and no
-// analog triggers, so no tank mode and no speed knob.
+// alone (mode switch on D, "Q36 for Android"). Its drive is 02-MiniTank's
+// on the Q36's D-pad: the Q36 has no sticks and no analog triggers, so no
+// tank mode and no speed knob.
 //   D-pad      -> the tracks, mixed in an X (arcade): up ahead, down back,
 //                 left and right turning on the spot, the diagonals curving
-//   link lost  -> both tracks stopped
+//   Y / A      -> the arm, DM2: held, up / down; released, it stops
+//   B / X      -> the bucket, DM3: held, tipped / curled; released, it stops
+//   link lost  -> every motor stopped
 // Left track DM0, right track DM1 (negated for mirrored wiring, as 02's).
 
-#define MOTOR_LEFT 0  // DM0, the left track
-#define MOTOR_RIGHT 1 // DM1, the right track
+#define MOTOR_LEFT 0   // DM0, the left track
+#define MOTOR_RIGHT 1  // DM1, the right track
+#define MOTOR_ARM 2    // DM2, the arm
+#define MOTOR_BUCKET 3 // DM3, the bucket
 // the tracks' speed at full D-pad, of setMotor's 127: the Q36's D-pad is
 // all or nothing, so this sets how fast the loader goes
 #define DRIVE_SPEED 100
 #define FULL 127 // a D-pad direction, as a stick pushed all the way
+// the arm's and the bucket's speed while their button is held, of
+// setMotor's 127; negate one to turn its motor the other way (its wiring)
+#define ARM_SPEED 100
+#define BUCKET_SPEED 100
+
+// a motor run by two buttons in REPORT_BUTTONS1: `plus` held, +speed;
+// `minus` held, -speed; neither or both, stopped
+static int8_t twoButtons(uint8_t buttons, uint8_t plus, uint8_t minus,
+                         int8_t speed) {
+  bool p = buttons & plus, m = buttons & minus;
+  return p == m ? 0 : p ? speed : -speed;
+}
 
 // The D-pad as a stick: throttle (up +) and turn (right +), each -FULL, 0
 // or FULL. From the hat, its directions clockwise from up; or, in the Q36's
@@ -47,11 +63,19 @@ void loop() {
     m = FULL;
   setMotor(MOTOR_LEFT, left * DRIVE_SPEED / m);
   setMotor(MOTOR_RIGHT, -right * DRIVE_SPEED / m);
+
+  // the loader: Y raises the arm, A lowers it; B tips the bucket, X curls
+  // it (the buttons on the Q36's face: Y top, A bottom, B right, X left)
+  uint8_t buttons = getReport(REPORT_BUTTONS1);
+  setMotor(MOTOR_ARM, twoButtons(buttons, BTN1_Y, BTN1_A, ARM_SPEED));
+  setMotor(MOTOR_BUCKET, twoButtons(buttons, BTN1_B, BTN1_X, BUCKET_SPEED));
 }
 
 // The pad's link lost (switched off, out of range): the loader stopped,
-// until the pad's next report
+// tracks, arm and bucket, until the pad's next report
 void onDisconnect() {
   setMotor(MOTOR_LEFT, 0);
   setMotor(MOTOR_RIGHT, 0);
+  setMotor(MOTOR_ARM, 0);
+  setMotor(MOTOR_BUCKET, 0);
 }
