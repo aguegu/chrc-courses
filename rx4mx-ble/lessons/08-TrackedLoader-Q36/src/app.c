@@ -21,7 +21,8 @@
 #define FULL 127 // a D-pad direction, as a stick pushed all the way
 // the arm's and the bucket's speed while their button is held, of
 // setMotor's 127; negate one to turn its motor the other way (its wiring)
-#define ARM_SPEED 100
+#define ARM_SPEED                                                              \
+  -100 // reversed: the loader's arm motor is wired the other way
 #define BUCKET_SPEED 100
 
 // a motor run by two buttons in REPORT_BUTTONS1: `plus` held, +speed;
