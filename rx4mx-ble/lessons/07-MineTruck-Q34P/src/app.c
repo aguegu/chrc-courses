@@ -37,10 +37,16 @@ static int8_t centered(uint8_t byte, uint8_t deadzone) {
 #define LED_BRIGHTNESS 64 // DM3 when lit: about half duty (up to DRIVE_MAX)
 #define DUMPER_DEADZONE 4 // the right stick's rest, ignored
 #define BRAKE -128        // setMotor's short brake
-#define TRIM_MAX 40       // the centre's bias, at most 0.4 ms either way
-// the steering's travel, in % of the stick's full swing (100: about 1.0 to
-// 2.0 ms; 50: 1.25 to 1.75 ms)
+// the servo's swing either side of the 1.5 ms centre, in setServo's
+// 0.01 ms: 1.0 to 2.0 ms, a regular analog servo's range
+#define SERVO_SWING 50
+// the steering's travel, in % of the swing (100: about 1.0 to 2.0 ms; 50:
+// 1.25 to 1.75 ms)
 #define STEER_RATIO 50
+// the centre's bias at most, either way: the rest of the swing, (100 -
+// STEER_RATIO) %, so steering and trim together stay within 1.0 to 2.0 ms
+// (at STEER_RATIO 50: 25 steps, 0.25 ms)
+#define TRIM_MAX ((100 - STEER_RATIO) * SERVO_SWING / 100)
 // the drive's ceiling, the motor driver's protection: 240/255 of full power
 // (setMotor's 127), never passed in either direction
 #define DRIVE_MAX 120
